@@ -1,0 +1,7 @@
+dar opcion de concretar
+poner el tiempo que se va a invertir
+filtrar ofertas y demandas
+agregar informacion del usuario
+calificar ofertas y demandas
+que varios puedan coger la demanda
+todo en vez de dinero que sea todo relacionado al tiempo
