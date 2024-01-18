@@ -13,6 +13,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:mime/mime.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:bancodt/src/page/transaccion/transaccionHoras_page.dart';
 import 'package:uuid/uuid.dart';
 
 void main() {
@@ -29,6 +30,7 @@ class chatPage extends StatelessWidget {
 }
 
 class ChatPage extends StatefulWidget {
+
   const ChatPage({super.key});
 
   @override
@@ -224,16 +226,41 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-    body: Chat(
-      messages: _messages,
-      onAttachmentPressed: _handleAttachmentPressed,
-      onMessageTap: _handleMessageTap,
-      onPreviewDataFetched: _handlePreviewDataFetched,
-      onSendPressed: _handleSendPressed,
-      showUserAvatars: true,
-      showUserNames: true,
-      user: _user,
-    ),
-  );
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              const Text('Chat Page'),
+              //Text(widget.chatPartnerName),
+              IconButton(
+                icon: const Icon(Icons.transfer_within_a_station),
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => TransaccionHoras()),
+                        (Route<dynamic> route) => false,
+                  );
+                },
+              ),
+              // Espacio en blanco para equilibrar el título y el ícono
+              const Opacity(opacity: 0, child: Icon(Icons.transfer_within_a_station)),
+            ],
+          ),
+        ),
+        body: Chat(
+          messages: _messages,
+          onAttachmentPressed: _handleAttachmentPressed,
+          onMessageTap: _handleMessageTap,
+          onPreviewDataFetched: _handlePreviewDataFetched,
+          onSendPressed: _handleSendPressed,
+          showUserAvatars: true,
+          showUserNames: true,
+          user: _user,
+        ),
+      ),
+    );
+  }
 }

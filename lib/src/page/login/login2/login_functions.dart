@@ -28,8 +28,6 @@ class LoginFunctions {
         SnackBar(content: Text('Error de autenticación')),
       );
     }
-    // await Future.delayed(const Duration(seconds: 2));
-    // return null;
   }
 
   /// Sign up action that will be performed on click to action button in sign up mode.
@@ -73,7 +71,7 @@ class LoginFunctions {
     await Future.delayed(const Duration(seconds: 2));
     Navigator.of(context).pop();
     //Navigator.of(context).pushNamed('/forgotPass');
-    Navigator.of(context).pushNamed('crearOfertaDemanda');
+    Navigator.of(context).pushNamed('home');
     return null;
   }
 }

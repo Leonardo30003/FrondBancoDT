@@ -1,7 +1,7 @@
 import 'package:animated_login/animated_login.dart';
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
-
+import 'package:bancodt/constantes/colores.dart';
 import 'dialog_builders.dart';
 import 'login_functions.dart';
 
@@ -144,11 +144,11 @@ final TextEditingController passwordController =TextEditingController();
       languageDialogTheme: LanguageDialogTheme(
           optionMargin: EdgeInsets.symmetric(horizontal: 80)),
     ),
-    loadingSocialButtonColor: Colors.blue,
+    loadingSocialButtonColor: colorUide,
     loadingButtonColor: Colors.white,
     privacyPolicyStyle: const TextStyle(color: Colors.black87),
     privacyPolicyLinkStyle: const TextStyle(
-        color: Colors.blue, decoration: TextDecoration.underline),
+        color: Colors.blueAccent, decoration: TextDecoration.underline),
   );
 
   /// You can adjust the colors, text styles, button styles, borders
@@ -156,11 +156,11 @@ final TextEditingController passwordController =TextEditingController();
   /// You can also set some additional display options such as [showLabelTexts].
   LoginViewTheme get _mobileTheme => LoginViewTheme(
     // showLabelTexts: false,
-    backgroundColor: Colors.blue, // const Color(0xFF6666FF),
+    backgroundColor: colorUide, // const Color(0xFF6666FF),
     formFieldBackgroundColor: Colors.white,
     formWidthRatio: 60,
     actionButtonStyle: ButtonStyle(
-      foregroundColor: MaterialStateProperty.all(Colors.blue),
+      foregroundColor: MaterialStateProperty.all(colorUide),
     ),
     animatedComponentOrder: const <AnimatedComponent>[
       AnimatedComponent(

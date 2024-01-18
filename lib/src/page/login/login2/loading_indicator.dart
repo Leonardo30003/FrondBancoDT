@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bancodt/constantes/colores.dart';
 
 class LoadingIndicator extends StatelessWidget {
   /// Loading indicator widget to show in processes.
@@ -24,7 +25,7 @@ class LoadingIndicator extends StatelessWidget {
           height: 100,
           child: Center(
             child: CircularProgressIndicator(
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).canvasColor,
               strokeWidth: 3,
             ),
           ),

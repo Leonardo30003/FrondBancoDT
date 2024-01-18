@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:bancodt/api/api_ofertasDemandas.dart';
 import 'package:bancodt/src/modelos/servicio_modelo.dart';
+import 'package:bancodt/src/utils/widgets/widgets_personalizados.dart';
+import 'package:bancodt/constantes/colores.dart';
 
 class CreateOfferDemandPage extends StatefulWidget {
   const CreateOfferDemandPage({Key? key}) : super(key: key);
@@ -55,7 +57,7 @@ class _CreateOfferDemandPageState extends State<CreateOfferDemandPage> {
       tiempo_requerido: int.tryParse(horas.text) ?? 0,
       fecha_creacion: fechaCreacion1.text,
       fecha_vigente: fechaVigente1.text,
-      propietario: 5,
+      propietario: 1,
       estadoVigencia: "vigente",
       estadoServicio: "solicitada",
     );
@@ -71,16 +73,13 @@ class _CreateOfferDemandPageState extends State<CreateOfferDemandPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Crear Ofertas y Demandas'),
-      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Tus otros widgets van aquí
+              cabecera("Crear ofertas y Demandas"),
               DropdownButtonFormField<String>(
                 value: tipo.text.isEmpty ? null : tipo.text,
                 items: const [
@@ -99,6 +98,7 @@ class _CreateOfferDemandPageState extends State<CreateOfferDemandPage> {
                 decoration: const InputDecoration(
                   labelText: 'Selecciona tipo:',
                   border: OutlineInputBorder(),
+
                 ),
                 isExpanded: true,
               ),
@@ -117,6 +117,7 @@ class _CreateOfferDemandPageState extends State<CreateOfferDemandPage> {
                 decoration: const InputDecoration(
                   labelText: 'Descripción',
                   border: OutlineInputBorder(),
+
                 ),
               ),
               const SizedBox(height: 20.0),
@@ -159,9 +160,9 @@ class _CreateOfferDemandPageState extends State<CreateOfferDemandPage> {
               const SizedBox(height: 20.0),
               ElevatedButton(
                 onPressed: _crearOferta,
-                child: const Text('Enviar'),
+                child: const Text('Crear'),
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.blue,
+                  primary: azulUide,
                   onPrimary: Colors.white,
                 ),
               ),

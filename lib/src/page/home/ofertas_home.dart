@@ -70,13 +70,13 @@ class _OfertasHome extends State<OfertasHome> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      Text(
-                        "Banco del Tiempo",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 30,
-                        ),
-                      ),
+                      // Text(
+                      //   "Banco del Tiempo",
+                      //   style: TextStyle(
+                      //     color: Colors.white,
+                      //     fontSize: 30,
+                      //   ),
+                      // ),
 
                     ],
                   ),

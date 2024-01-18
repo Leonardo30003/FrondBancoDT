@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(TransaccionHoras());
-}
+
 
 class TransaccionHoras extends StatelessWidget {
   @override

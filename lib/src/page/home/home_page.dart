@@ -243,11 +243,10 @@ String _getTitleByIndex(int index) {
       return 'Not found page';
   }
 }
-
-const primaryColor = Color(0xFF685BFF);
-const canvasColor = Color(0xFF2E2E48);
-const scaffoldBackgroundColor = Color(0xFF464667);
-const accentCanvasColor = Color(0xFF3E3E61);
-const white = Colors.white;
-final actionColor = const Color(0xFF5F5FA7).withOpacity(0.6);
-final divider = Divider(color: white.withOpacity(0.3), height: 1);
+const Color primaryColor = Color(0xFF910048); // Morado para elementos interactivos y botones
+const Color canvasColor = Color(0xFF910048); // Morado claro para el fondo del contenido principal
+const Color scaffoldBackgroundColor = Color(0xFFFFFFFF); // Azul índigo para la barra lateral o fondo de andamio
+const Color accentCanvasColor = Color(0xFF002D72); // Amarillo para acentos, ideal para bordes y divisores
+const Color white = Colors.white; // Blanco puro para texto y contraste
+final Color actionColor = Color(0xFF910048).withOpacity(0.6); // Morado translúcido para elementos de acción como botones flotantes
+final Divider divider = Divider(color: white.withOpacity(0.3), height: 1); // Divisor blanco translúcido para separar elementos discretamente

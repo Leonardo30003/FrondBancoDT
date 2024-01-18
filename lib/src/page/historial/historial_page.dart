@@ -1,13 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:bancodt/constantes/const.dart';
-import 'package:bancodt/api/api_transaccion.dart';
-import 'package:http/http.dart';
-import 'package:async/async.dart';
+import 'package:bancodt/src/page/home/MyClipper.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
-void main() => runApp(HistorialPage());
-
+import 'package:bancodt/src/utils/widgets/widgets_personalizados.dart';
 
 class HistorialPage extends StatefulWidget {
   const HistorialPage({super.key});
@@ -31,75 +27,70 @@ class _HistorialPageState extends State<HistorialPage> {
     if (response.statusCode == 200) {
       setState(() {
         transacciones = jsonDecode(response.body);
-        //
       });
-
     } else {
-      // Manejar errores según sea necesario
       print('Error al obtener la lista de usuarios: ${response.statusCode}');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Color personalizado
+    Color azulUide = Color.fromRGBO(0, 45, 114, 1.0);
+    Color primaryTextColor = Colors.black;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(' Historial de transacciones'),
-      ),
       body: Column(
         children: <Widget>[
+          cabecera("Historial"),
           Container(
             padding: EdgeInsets.all(20.0),
-            color: Colors.lightBlue, // Use the appropriate purple shade
+            color: azulUide,
             width: double.infinity,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  'Budget Name',
-                  style: TextStyle(fontSize: 18.0, color: Colors.white),
-                ),
                 SizedBox(height: 10),
                 Text(
-                  '\$25,000',
-                  style: TextStyle(fontSize: 36.0, fontWeight: FontWeight.bold, color: Colors.white),
-                ),
-                Text(
-                  'Per Month',
-                  style: TextStyle(fontSize: 18.0, color: Colors.white),
-                ),
-                SizedBox(height: 10),
-                Text(
-                  '4 Days Left',
-                  style: TextStyle(fontSize: 18.0, color: Colors.white),
+                  '25 horas',
+                  style: TextStyle(
+                    fontSize: 36.0,
+                    fontWeight: FontWeight.bold,
+                    color: primaryTextColor,
+                  ),
                 ),
               ],
             ),
           ),
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 50.0,horizontal: 10.0),
-              itemCount: transacciones.length, // Use the number of transactions you have
+              padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+              itemCount: transacciones.length,
               itemBuilder: (context, index) {
                 final transaccion = transacciones[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    maxRadius: 100.0,
-                    backgroundColor: Colors.lightBlueAccent,
-                    child: Text("T",
-                    style: TextStyle(fontSize: 8.0,fontWeight: FontWeight.bold,),
+                return Card(
+                  elevation: 1.0,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: azulUide,
+                      child: Icon(Icons.access_time, color: Colors.white), // Ícono de tiempo
                     ),
-                  ),
-                  title: Text('Titulo: '+transaccion['servicio']['titulo'].toString()),
-                  subtitle: Text('Numero Horas: '+transaccion['numero_horas'].toString()),
-                  trailing: Column(
-
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
-                      Text(transaccion['fecha_transaccion']),
-                      Text(transaccion['estadoTransaccion']),
-                    ],
+                    title: Text(
+                      'Título: ${transaccion['servicio']['titulo']}',
+                      style: TextStyle(color: primaryTextColor),
+                    ),
+                    subtitle: Text(
+                      'Número Horas: ${transaccion['numero_horas']}',
+                      style: TextStyle(color: primaryTextColor),
+                    ),
+                    trailing: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Text(transaccion['fecha_transaccion'], style: TextStyle(color: primaryTextColor)),
+                        Text(transaccion['estadoTransaccion'], style: TextStyle(color: primaryTextColor)),
+                      ],
+                    ),
                   ),
                 );
               },
@@ -110,6 +101,3 @@ class _HistorialPageState extends State<HistorialPage> {
     );
   }
 }
-
-
-
