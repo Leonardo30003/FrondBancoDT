@@ -1,5 +1,8 @@
+import 'package:bancodt/constantes/colores.dart';
 import 'package:flutter/material.dart';
 import 'package:bancodt/src/page/home/MyClipper.dart';
+
+
 
 Widget cabecera(String titulo) {
   final Color azulUide = Color.fromRGBO(0, 45, 114, 1.0);
