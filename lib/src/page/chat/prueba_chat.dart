@@ -1,35 +1,37 @@
 import 'package:flutter/material.dart';
-import 'package:bancodt/constantes/const.dart';
-import 'package:bancodt/src/page/home/MyClipper.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:bancodt/constantes/const.dart';
+import 'package:bancodt/constantes/colores.dart';
 import 'package:bancodt/constantes/widgets/widgets_personalizados.dart';
+import 'package:xen_popup_card/xen_popup_card.dart';
+import 'package:bancodt/src/page/chat/chat.dart';
 
-class HistorialPage extends StatefulWidget {
-  const HistorialPage({super.key});
+class PruebaChat extends StatefulWidget {
+  const PruebaChat({super.key});
 
   @override
-  State<HistorialPage> createState() => _HistorialPageState();
+  State<PruebaChat> createState() => _PruebaChatState();
 }
 
-class _HistorialPageState extends State<HistorialPage> {
-  List<dynamic> transacciones = [];
+class _PruebaChatState extends State<PruebaChat> {
+  List<dynamic> mensajes = [];
 
   @override
   void initState() {
     super.initState();
-    listaDeTransacciones();
+    listaDeMensajes();
   }
 
-  Future<void> listaDeTransacciones() async {
-    final response = await http.get(Uri.parse(crear_transacciones));
+  Future<void> listaDeMensajes() async {
+    final response = await http.get(Uri.parse(canal_mensajes));
 
     if (response.statusCode == 200) {
       setState(() {
-        transacciones = jsonDecode(response.body);
+        mensajes = jsonDecode(response.body);
       });
     } else {
-      print('Error al obtener la lista de usuarios: ${response.statusCode}');
+      print('Error al obtener la lista de mensajes: ${response.statusCode}');
     }
   }
 
@@ -64,33 +66,37 @@ class _HistorialPageState extends State<HistorialPage> {
           ),
           Expanded(
             child: ListView.builder(
-              padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
-              itemCount: transacciones.length,
+              padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 30.0),
+              itemCount: mensajes.length,
               itemBuilder: (context, index) {
-                final transaccion = transacciones[index];
+                final mensaje = mensajes[index];
                 return Card(
                   elevation: 1.0,
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: azulUide,
-                      child: Icon(Icons.access_time, color: Colors.white), // Ícono de tiempo
+                      child: Icon(Icons.access_time,
+                          color: Colors.white), // Ícono de tiempo
                     ),
+
                     title: Text(
-                      'Título: ${transaccion['servicio']['titulo']}',
+                      'usuario: ${mensaje['usuario']}',
                       style: TextStyle(color: primaryTextColor),
                     ),
                     subtitle: Text(
-                      'Número Horas: ${transaccion['numero_horas']}',
+                      'texto: ${mensaje['texto']}',
                       style: TextStyle(color: primaryTextColor),
                     ),
-                    trailing: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-                        Text(transaccion['fecha_transaccion'], style: TextStyle(color: primaryTextColor)),
-                        Text(transaccion['estadoTransaccion'], style: TextStyle(color: primaryTextColor)),
-                      ],
-                    ),
+                    onTap: (){
+                      showDialog(
+                        context: context,
+                        builder: (context){
+                          return AlertDialog(
+                            content: ChatPage(),
+                          );
+                        }
+                      );
+                    },
                   ),
                 );
               },

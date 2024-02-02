@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bancodt/constantes/const.dart';
-import 'package:bancodt/src/utils/widgets/widgets_personalizados.dart'; // Asegúrate de que esta ruta sea correcta
+import 'package:bancodt/constantes/widgets/widgets_personalizados.dart';
+import 'package:bancodt/src/modelos/servicio_modelo.dart';
+import 'package:bancodt/src/page/chat/chat.dart';
+
 
 class DemandasHome extends StatefulWidget {
   const DemandasHome({super.key});
@@ -63,16 +66,13 @@ class _DemandasHome extends State<DemandasHome> {
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: servicios.length,
                   itemBuilder: (context, index) {
-                    final servicio = servicios[index];
+                    final servicioMap = servicios[index];
+                    final servicio = Servicio.fromJson(servicioMap);
                     return GestureDetector(
-                      onTap: () {
-                        _showDetailsDialog(context, servicio['titulo'], servicio['descripcion'], servicio);
-                      },
+                      onTap: () => _showDetailsDialog(context, servicio.titulo,
+                          servicio.descripcion_actividad, servicio),
                       child: DemandCard(
-                        title: servicio['titulo'],
-                        descripcion: servicio['descripcion'],
-                        costo: servicio['costo'],
-                        imgUrl: 'assets/images/google.png', // Asegúrate de que esta imagen exista en tus assets
+                        servicio: servicio,
                       ),
                     );
                   },
@@ -87,7 +87,6 @@ class _DemandasHome extends State<DemandasHome> {
   }
 
   void _showDetailsDialog(BuildContext context, String title, String descripcion, dynamic servicio) {
-    print('muestra dialogo para $title');
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -97,6 +96,8 @@ class _DemandasHome extends State<DemandasHome> {
             child: ListBody(
               children: <Widget>[
                 Text(descripcion),
+                Text('Fecha de Creacion: ${servicio.fecha_creacion}'),
+                Text('Fecha vigente: ${servicio.fecha_vigente}'),
               ],
             ),
           ),
@@ -110,6 +111,12 @@ class _DemandasHome extends State<DemandasHome> {
               onPressed: () {
                 // Acción del botón
                 Navigator.of(context).pop();
+                showDialog(context: context, builder: (BuildContext context){
+                  return AlertDialog(
+                    content: ChatPage(),
+                  );
+                },
+                );
               },
             ),
           ],
@@ -120,17 +127,10 @@ class _DemandasHome extends State<DemandasHome> {
 }
 
 class DemandCard extends StatelessWidget {
-  final String? title;
-  final String? descripcion;
-  final int? costo;
-  final String? imgUrl;
 
-  const DemandCard({
-    this.title,
-    this.descripcion,
-    this.costo,
-    this.imgUrl,
-  });
+  final Servicio servicio;
+
+  const DemandCard({Key? key, required this.servicio}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +142,7 @@ class DemandCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(10.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.blue.withOpacity(0.5),
             spreadRadius: 2,
             blurRadius: 5,
             offset: Offset(0, 3),
@@ -151,14 +151,7 @@ class DemandCard extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          imgUrl != null
-              ? Image.network(
-            imgUrl!,
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-          )
-              : Container(),
+          // Aquí puedes agregar la imagen si tu servicio tiene una URL de imagen
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(left: 10.0),
@@ -166,7 +159,7 @@ class DemandCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    title ?? 'Titulo no disponible',
+                    servicio.titulo,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -175,28 +168,17 @@ class DemandCard extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   Text(
-                    descripcion ?? 'Descripcion no disponible',
+                    servicio.descripcion_actividad,
                     style: TextStyle(fontSize: 14),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                   ),
-                  SizedBox(height: 10),
-                  Row(
-                    children: costo != null
-                        ? List.generate(
-                      costo!,
-                          (index) => Icon(
-                        Icons.timelapse,
-                        color: Colors.amber,
-                        size: 20,
-                      ),
-                    )
-                        : [Text('Costo no disponible')],
-                  ),
+                  // Aquí puedes agregar más detalles del servicio si es necesario
                 ],
               ),
             ),
           ),
+          // Otros elementos que desees agregar, como botones o iconos
         ],
       ),
     );

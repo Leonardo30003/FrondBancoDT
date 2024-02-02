@@ -9,9 +9,10 @@ import 'package:bancodt/src/page/historial/historial_page.dart';
 import 'package:bancodt/src/page/home/ofertas_home.dart';
 import 'package:bancodt/src/page/demandas/demandas/demandas_page.dart';
 import 'package:bancodt/src/page/transaccion/transaccionTerminada.dart';
-import 'package:bancodt/src/page/transaccion/transaccionTerminada.dart';
 import 'package:bancodt/src/page/Chat/chat.dart';
 import 'package:bancodt/src/page/chat/chats.dart';
+import 'package:bancodt/src/page/chat/prueba_chat.dart';
+import 'package:bancodt/src/page/transaccion/VerTransaccion.dart';
 
 final routes = <String, WidgetBuilder>{
  'login':(BuildContext context)=>LoginScreen(),
@@ -27,4 +28,6 @@ final routes = <String, WidgetBuilder>{
  'chat':(BuildContext context)=>chatPage(),
  'demandaspage':(BuildContext context) => DemandasHome(),
  'chats':(BuildContext context) => ChatsPage(),
+ 'mensajes':(BuildContext context) => PruebaChat(),
+ 'vertransaccion':(BuildContext context)=>VerTransaccion(),
 };

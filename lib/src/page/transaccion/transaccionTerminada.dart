@@ -2,6 +2,9 @@ import 'package:bancodt/src/page/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
+void main() {
+  runApp(transaccionTerminada());
+}
 
 class transaccionTerminada extends StatelessWidget {
   @override
@@ -32,7 +35,7 @@ class _RatingScreenState extends State<RatingScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            Icon(Icons.check_circle, size: 100, color: Colors.purple),
+            Icon(Icons.check_circle, size: 100, color: Colors.blue),
             Text(
               'Transacción terminada!!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
@@ -84,7 +87,7 @@ class _RatingScreenState extends State<RatingScreen> {
                 );
 
               },
-              child: Text('Home'),
+              child: Text('Calificar y terminar'),
               style: ElevatedButton.styleFrom(
                 shape: StadiumBorder(),
               ),

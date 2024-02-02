@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:bancodt/api/api_ofertasDemandas.dart';
 import 'package:bancodt/src/modelos/servicio_modelo.dart';
-import 'package:bancodt/src/utils/widgets/widgets_personalizados.dart';
+import 'package:bancodt/constantes/widgets/widgets_personalizados.dart';
 import 'package:bancodt/constantes/colores.dart';
-
+import 'package:bancodt/src/providers/usuario_provider.dart';
+import 'package:bancodt/src/modelos/usuarios_modelo.dart';
+import 'package:provider/provider.dart';
+import 'package:bancodt/src/modelos/cuenta_modelo.dart';
+import 'package:bancodt/api/api_cuenta.dart';
 class CreateOfferDemandPage extends StatefulWidget {
   const CreateOfferDemandPage({Key? key}) : super(key: key);
 
@@ -19,9 +23,39 @@ class _CreateOfferDemandPageState extends State<CreateOfferDemandPage> {
   final TextEditingController horas = TextEditingController();
   final TextEditingController fechaCreacion1 = TextEditingController();
   final TextEditingController fechaVigente1 = TextEditingController();
+
   DateTime? fechaCreacion;
   DateTime? fechaVigente;
 
+  //metodo para obtener el usuario autentificado
+  late UsuarioProvider _usuarioProvider;
+  late Future<Cuenta> _cuentaFuture;
+
+
+  void _loadUserProfile() {
+    // Obtener el usuario desde el UsuarioProvider
+
+    Usuario? usuario = _usuarioProvider.usuario;
+    if (usuario != null) {
+      //setState(() {
+      //   _id = usuario.id;
+      //   _description = usuario.last_name;
+      //   _email = usuario.email;
+      //   // Resto del código...
+      // });
+    }
+    print(usuario);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Obtener una referencia al UsuarioProvider
+    _usuarioProvider = Provider.of<UsuarioProvider>(context, listen: false);
+    // Cargar el perfil del usuario al inicio
+    _loadUserProfile();
+
+  }
   Future<void> _selectDateRange(BuildContext context) async {
     final DateTimeRange? picked = await showDateRangePicker(
       context: context,
@@ -40,7 +74,7 @@ class _CreateOfferDemandPageState extends State<CreateOfferDemandPage> {
     }
   }
 
-  void _crearOferta() {
+  void _crearOferta() async {
     if (fechaCreacion == null || fechaVigente == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -49,26 +83,36 @@ class _CreateOfferDemandPageState extends State<CreateOfferDemandPage> {
       );
       return;
     }
+    Usuario? usuario = _usuarioProvider.usuario;
+    if (usuario != null) {
+      setState(() {
+        _cuentaFuture = CuentaApi.obtenerCuentaPorId(usuario.id.toString());
 
-    final oferta = Servicio(
-      ROL_CHOICES: tipo.text,
-      titulo: titulo.text,
-      descripcion_actividad: descripcion.text,
-      tiempo_requerido: int.tryParse(horas.text) ?? 0,
-      fecha_creacion: fechaCreacion1.text,
-      fecha_vigente: fechaVigente1.text,
-      propietario: 1,
-      estadoVigencia: "vigente",
-      estadoServicio: "solicitada",
-    );
+        _cuentaFuture.then((cuenta) {
+        print(usuario.id);
+        print(tipo.text);
+        final oferta = Servicio(
+          ROL_CHOICES: tipo.text,
+          titulo: titulo.text,
+          descripcion_actividad: descripcion.text,
+          tiempo_requerido: int.tryParse(horas.text) ?? 0,
+          fecha_creacion: fechaCreacion1.text,
+          fecha_vigente: fechaVigente1.text,
+          propietario:cuenta.id,
+          estadoVigencia: "vigente",
+          estadoServicio: "solicitada",
 
-    ServicioApi.crearServicio(oferta);
-        //.then((resultado) {
-    //   print("se guardo el servicio");
-    // }).catchError((error) {
-    //   print("no se guardo el servicio");
-    // });
+        );
+
+        ServicioApi.crearServicio(oferta);
+        }).catchError((error) {
+          print("Error al obtener la cuenta: $error");
+        });
+      });
+
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {

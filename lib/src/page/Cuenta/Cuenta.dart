@@ -2,7 +2,7 @@ import 'package:bancodt/src/page/Cuenta/numbers_witget.dart';
 import 'constants.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:bancodt/src/utils/colores.dart';
+import 'package:bancodt/constantes/colores.dart';
 import 'package:bancodt/src/utils/fondo_login.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';

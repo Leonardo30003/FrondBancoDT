@@ -168,7 +168,6 @@ final TextEditingController passwordController =TextEditingController();
         animationType: AnimationType.right,
       ),
       AnimatedComponent(component: LoginComponents.title),
-
       AnimatedComponent(component: LoginComponents.description),
       AnimatedComponent(component: LoginComponents.formTitle),
       AnimatedComponent(component: LoginComponents.socialLogins),

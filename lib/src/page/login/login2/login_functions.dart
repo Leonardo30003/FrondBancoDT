@@ -6,6 +6,10 @@ import 'package:bancodt/src/page/home/home_page.dart';
 import 'package:bancodt/src/modelos/usuarios_modelo.dart';
 import 'package:bancodt/api/api_usuarios.dart';
 import 'dart:core';
+import 'package:bancodt/src/providers/usuario_provider.dart';
+import 'package:bancodt/src/providers/ChangeNotifier.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
 class LoginFunctions {
   /// Collection of functions will be performed on login/signup.
@@ -16,13 +20,26 @@ class LoginFunctions {
   /// Login action that will be performed on click to action button in login mode.
   Future<String?> onLogin(LoginData loginData) async {
     print(loginData);
-    final token = await Api.authenticate(loginData.email, loginData.password);
+    final token =
+        await Api.authenticate(context, loginData.email, loginData.password);
     print(token);
     if (token != null) {
-      await Api.saveToken(token);
+      Provider.of<AuthProvider>(context, listen: false)
+          .setToken(token['token']);
+      Provider.of<UsuarioProvider>(context, listen: false)
+          .setUserDetails(Usuario.fromJson(token['user']));
+
+      // Guardar el token y los detalles del usuario
+      await Api.saveToken(token['token']);
+
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => HomePage()),
       );
+
+      // await Api.saveToken(token);
+      // Navigator.of(context).pushReplacement(
+      //   MaterialPageRoute(builder: (context) => HomePage()),
+      // );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error de autenticación')),
@@ -34,27 +51,37 @@ class LoginFunctions {
   Future<String?> onSignup(SignUpData signupData) async {
     print(signupData);
     final usuario = Usuario(
-     first_name:signupData.name,
-      email: signupData.email,
-      password: signupData.password,
-        confirm_password:signupData.confirmPassword,
-      direccion: "n/n",
-      telefono: "n/n",
-      documento_identificacion:"n/n",
-      is_active: true,
-      is_staff: true,
-      genero: "h",
-      last_name: "n/n",
-      username:signupData.email);
-    print(usuario.password);
-    UsuarioApi.crearUsuario(usuario);
-    print("Usuario Creado");
-    Navigator.pushNamed(context,'login');
+        first_name: signupData.name,
+        email: signupData.email,
+        password: signupData.password,
+        confirm_password: signupData.confirmPassword,
+        direccion: "n/n",
+        telefono: "n/n",
+        documento_identificacion: "n/n",
+        imagen: '',
+        is_active: true,
+        is_staff: true,
+        genero: "h",
+        last_name: "n/n",
+        descripcion: '',
+        username: signupData.email);
+
+    try {
+      print(usuario.password);
+      await UsuarioApi.crearUsuario(usuario);
+      print("Usuario Creado");
+      Navigator.pushNamed(context, 'login');
+      await Future.delayed(const Duration(seconds: 2));
+    } catch (e) {
+      print('Error al crear usuario: $e');
+      return 'Error al crear usuario';
+    }
+
     // final token = await Api.authenticate(signupData.email, signupData.password);
     // if (signupData.password != signupData.confirmPassword) {
     //   return 'The passwords you entered do not match, check again.';
     //}
-    await Future.delayed(const Duration(seconds: 2));
+
     return null;
   }
 

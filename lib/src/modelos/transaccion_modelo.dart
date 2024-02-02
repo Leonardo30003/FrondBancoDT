@@ -1,20 +1,16 @@
 
-import 'dart:js_interop';
-
-import 'package:bancodt/src/modelos/servicio_modelo.dart';
-import 'package:bancodt/src/modelos/usuarios_modelo.dart';
-
 class TransaccionTiempo {
-  final int id;
-  final Servicio servicio;
-  final int numero_horas;
+  final int? id ;
+  final int? servicio;
+  final int? numero_horas;
 
-  final int numero_minutos;
+  final int? numero_minutos;
 
   final String descripcion;
-  final Usuario demandante;
+  //final String demandante;
+  final int? demandanteCuenta;
 
-  final DateTime fecha_transaccion;
+  final String fecha_transaccion;
   final String estadoTransaccion;
 
   const TransaccionTiempo({
@@ -23,7 +19,8 @@ class TransaccionTiempo {
     required this.numero_horas,
     required this.numero_minutos,
     required this.descripcion,
-    required this.demandante,
+    //required this.demandante,
+    required this.demandanteCuenta,
     required this.fecha_transaccion,
     required this.estadoTransaccion,
 
@@ -35,7 +32,8 @@ class TransaccionTiempo {
       'numero_horas':numero_horas,
       'numero_minutos':numero_minutos,
       'descripcion':descripcion,
-      'demandante':demandante,
+      //'demandante':demandante,
+      'demandanteCuenta': demandanteCuenta,
       'fecha_transaccion':fecha_transaccion,
       'estadoTransaccion':estadoTransaccion,
 
@@ -43,14 +41,15 @@ class TransaccionTiempo {
   }
   factory TransaccionTiempo.fromJson(Map<String,dynamic>json){
     return TransaccionTiempo(
-        id:json['id'],
-        servicio:json['servicio'],
-        numero_horas:json['numero_horas'],
-        numero_minutos:json['numero_minutos'],
-        descripcion:json['descripcion'],
-        demandante:json['demandante'],
-        fecha_transaccion:json['fecha_transaccion'],
-        estadoTransaccion:json['estadoTransaccion']
+      id:json['id'] ,
+      servicio:json['servicio'],
+      numero_horas:json['numero_horas'],
+      numero_minutos:json['numero_minutos'] ,
+      descripcion:json['descripcion'] ?? '',
+      //demandante:json['demandante'] ?? '',
+      demandanteCuenta:json['demandanteCuenta'] ,
+      fecha_transaccion:json['fecha_transaccion'] ?? '',
+      estadoTransaccion:json['estadoTransaccion'] ?? '',
     );
   }
 

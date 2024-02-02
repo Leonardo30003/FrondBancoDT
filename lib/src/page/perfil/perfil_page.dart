@@ -1,5 +1,8 @@
 import 'dart:io';
-
+import 'package:bancodt/api/api_cuenta.dart';
+import 'package:bancodt/api/api_ofertasDemandas.dart';
+import 'package:bancodt/src/modelos/usuarios_modelo.dart';
+import 'package:bancodt/src/providers/usuario_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +12,11 @@ import 'package:xen_popup_card/xen_popup_card.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'button.dart';
+import 'package:provider/provider.dart';
+import 'package:bancodt/api/api_usuarios.dart';
+import 'package:bancodt/src/modelos/cuenta_modelo.dart';
+import 'package:intl/intl.dart';
+import '../login/login2/dialog_builders.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -18,6 +26,183 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  // para recuperar los datos
+
+  late UsuarioProvider _usuarioProvider;
+  bool _mostrarOfertas = true;
+  late Future<Cuenta> _cuentaFuture;
+
+  Future<List<dynamic>> obtenerServiciosOfertas(
+      String cuenta, String rolChoices) async {
+    // Reemplaza con el tipo deseado
+    try {
+      List<dynamic> servicios = await ServicioApi.obtenerServiciosCuentaTipo(
+          cuenta: cuenta, rolChoices: rolChoices);
+      print('Servicios obtenidos: $servicios');
+      return servicios;
+    } catch (error) {
+      print('Error al obtener servicios: $error');
+      throw error; // Puedes manejar el error según tus necesidades
+    }
+  }
+
+  List<dynamic> ofertas = [];
+  List<dynamic> demandas = [];
+
+  // codigo para cargar la lista de servicios por oferta/demandas
+
+  final fechaCreacionFormatted =
+      DateFormat('yyyy-MM-dd').format(DateTime.now());
+  final fechaActualizacionFormatted =
+      DateFormat('yyyy-MM-dd').format(DateTime.now());
+
+  void _actualizarUsuario() async {
+    Usuario usuarioActual = await UsuarioApi.obtenerUsuarioPorId(_id);
+    String generoAsignado = '';
+    if (genero == "Masculino") {
+      generoAsignado = "h"; // Asigna "h" si el género es Masculino
+    } else if (genero == "Femenino") {
+      generoAsignado = "m"; // Asigna "m" si el género es Femenino
+    }
+
+    final usuario = Usuario(
+        id: _id,
+        first_name: _name,
+        email: _email,
+        password: usuarioActual.password,
+        confirm_password: usuarioActual.password,
+        direccion: direccion,
+        telefono: telefono,
+        documento_identificacion: documennto_identificacion,
+        is_active: true,
+        is_staff: true,
+        genero: generoAsignado,
+        last_name: last_name,
+        descripcion: _description,
+        imagen: _image?.path ?? "images/Bank.jpeg",
+        username: usuarioActual.username);
+    try {
+      print(usuario.password);
+      await UsuarioApi.actualizarUsuario(usuario);
+      print("actualizado");
+      Usuario usuarioActualizado = await UsuarioApi.obtenerUsuarioPorId(_id);
+      final cuenta = Cuenta(
+        usuario: usuarioActualizado.id, // Crea una nueva instancia de Usuario
+        fecha_creacion: fechaCreacionFormatted,
+        fecha_actualizacion: fechaActualizacionFormatted,
+        numero_horas: 10,
+      );
+
+      await CuentaApi.crearCuenta(cuenta);
+    } catch (e) {
+      print("Error al actualizar usuario: $e");
+    }
+  }
+
+  void _loadUserProfile() {
+    // Obtener el usuario desde el UsuarioProvider
+    Usuario? usuario = _usuarioProvider.usuario;
+
+    if (usuario != null) {
+      setState(() {
+        _name = usuario.first_name;
+        _description = usuario.last_name;
+        _username = usuario.username;
+        // _password = usuario.password;
+        _email = usuario.email;
+        _description = usuario.descripcion;
+        telefono = usuario.telefono;
+        direccion = usuario.direccion;
+
+        _id = usuario.id;
+        // Resto del código...
+      });
+    }
+    print(_id);
+  }
+
+  // Función para cargar la cuenta
+  /* void _cargarCuenta() async {
+    Usuario? usuario = _usuarioProvider.usuario;
+    if (usuario != null) {
+      setState(() {
+        print(usuario.id);
+
+        _cuentaFuture = CuentaApi.obtenerCuentaPorId(usuario.id
+            .toString()); // Asignar el Future resultante a la variable _cuentaFuture
+        print(_cuentaFuture);
+      });
+    }
+  } */
+
+  void _cargarCuenta() async {
+    Usuario? usuario = _usuarioProvider.usuario;
+    if (usuario != null) {
+      setState(() {
+        _cuentaFuture = CuentaApi.obtenerCuentaPorId(usuario.id.toString());
+
+        _cuentaFuture.then((cuenta) {
+          print("Cuenta obtenida: ${cuenta?.toJson()}");
+
+          if (cuenta != null) {
+            print("ID de la cuenta: ${cuenta.id}");
+          } else {
+            print("La cuenta es nula");
+          }
+        }).catchError((error) {
+          print("Error al obtener la cuenta: $error");
+        });
+      });
+    }
+  }
+
+  /* void _cargarCuenta() async {
+    Usuario? usuario = _usuarioProvider.usuario;
+    if (usuario != null) {
+      try {
+        // Obtener el ID de la cuenta directamente sin esperar la respuesta completa de la cuenta
+        final int accountId =
+            await CuentaApi.obtenerCuentaPorId(usuario.id.toString());
+      } catch (error) {
+        // Manejar errores si es necesario
+        print("Error al obtener el ID de la cuenta: $error");
+      }
+    }
+  } */
+
+  @override
+  void initState() {
+    super.initState();
+    // Obtener una referencia al UsuarioProvider
+    _usuarioProvider = Provider.of<UsuarioProvider>(context, listen: false);
+    // Cargar el perfil del usuario al inicio
+
+    _loadUserProfile();
+    // cargamos la cuenta
+    _cargarCuenta();
+
+    // prueba mostrando datos
+
+    // Inicializar el gutter aquí después de que se ha cargado el perfil
+    gutter = XenCardGutter(
+      child: Padding(
+        padding: EdgeInsets.all(8.0),
+        child: CustomButton(
+          text: "Guardar y salir",
+          onPressed: () {
+            // Llama al método _actualizarUsuario al presionar el botón
+            _actualizarUsuario();
+            DialogBuilder(context).showResultDialog(
+                'Se actualizado sus datos y se ha creado su cuenta correctamente');
+            print("Botón presionado");
+          },
+        ),
+      ),
+    );
+  }
+
+  // para crear el usuario
+  int? _id;
   String _name = "Nombre";
   String last_name = "";
   String username = "";
@@ -25,21 +210,29 @@ class _ProfilePageState extends State<ProfilePage> {
   String direccion = "";
   String documennto_identificacion = "";
   String genero = "";
-  String email = "";
+  String _email = "";
   String password = "";
   String confirm_password = "";
   String _description = "Descripcion";
   String facebookUrl = "";
   String instagramUrl = "";
   String linkedInUrl = "";
+  String _username = '';
+  String _password = '';
 
   bool _isEditing = false;
+
+  // para crear la cuenta
+  String fecha_creacion = '';
+  String fecha_actualizacion = '';
+  int numero_horas = 10;
 
   final BoxController boxController = BoxController();
   final List<String> _offers = ['Mi Oferta 1', 'Mi Oferta 2'];
   final List<String> _demands = ['Mi demanda 1', 'Mi demanda 2'];
   bool showingOffers = true;
   bool _isSlidingBoxVisible = false;
+  XenCardGutter? gutter;
 
   File? _image;
 
@@ -47,36 +240,35 @@ class _ProfilePageState extends State<ProfilePage> {
     if (!await launch(url)) throw 'No se pudo lanzar $url';
   }
 
-  void showOffers() {
-    if (_isSlidingBoxVisible) {
-      // Actualiza este método con el método correcto para cerrar el SlidingBox
-      boxController.closeBox();
-    } else {
-      // Actualiza este método con el método correcto para abrir el SlidingBox
-      boxController.openBox();
+  void showOffers() async {
+    try {
+      Cuenta cuenta = await _cuentaFuture;
+      List<dynamic> servicios = await obtenerServiciosOfertas(cuenta.id.toString(), 'Oferta');
+      setState(() {
+        _mostrarServicios(context, 'Oferta', servicios);
+      });
+    } catch (error) {
+      print('Error al obtener servicios: $error');
     }
-    setState(() {
-      _isSlidingBoxVisible = !_isSlidingBoxVisible;
-    });
   }
 
-  void showDemands() {
-    if (_isSlidingBoxVisible) {
-      // Actualiza este método con el método correcto para cerrar el SlidingBox
-      boxController.closeBox();
-    } else {
-      // Actualiza este método con el método correcto para abrir el SlidingBox
-      boxController.openBox();
+  void showDemands() async {
+    try {
+      Cuenta cuenta = await _cuentaFuture;
+      print(cuenta.id);
+      List<dynamic> servicios = await obtenerServiciosOfertas(cuenta.id.toString(), 'Demanda');
+      setState(() {
+        _mostrarServicios(context, 'Demanda', servicios);
+      });
+    } catch (error) {
+      print('Error al obtener servicios: $error');
     }
-    setState(() {
-      _isSlidingBoxVisible = !_isSlidingBoxVisible;
-    });
   }
 
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? pickedFile =
-    await _picker.pickImage(source: ImageSource.gallery);
+        await _picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -85,12 +277,20 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  XenCardGutter gutter = const XenCardGutter(
+  /* XenCardGutter gutter = XenCardGutter(
     child: Padding(
       padding: EdgeInsets.all(8.0),
-      child: CustomButton(text: "Guardar y salir"),
+      child: CustomButton(
+        text: "Guardar y salir",
+        onPressed: () {
+          // Llama al método _actualizarUsuario al presionar el botón
+          _actualizarUsuario();
+          print("Botón presionado");
+        },
+      ),
     ),
-  );
+  ); */
+
   @override
   Widget build(BuildContext context) {
     double slidingBoxHeight = _isSlidingBoxVisible
@@ -107,36 +307,54 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: <Widget>[
                   _isEditing
                       ? _EditableTextField(
-                    label: "Nombre:",
-                    initialValue: _name,
-                    onChanged: (value) {
-                      setState(() {
-                        _name = value;
-                      });
-                    },
-                  )
+                          label: "Nombre:",
+                          initialValue: _name,
+                          onChanged: (value) {
+                            setState(() {
+                              _name = value;
+                            });
+                          },
+                        )
                       : Text(
-                    _name,
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline6
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
+                          _name,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                  const SizedBox(height: 10),
+                  _isEditing
+                      ? _EditableTextField(
+                          label: "Correo:",
+                          initialValue: _email,
+                          onChanged: (value) {
+                            setState(() {
+                              _email = value;
+                            });
+                          },
+                        )
+                      : Text(
+                          _email,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headline6
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
                   const SizedBox(height: 16),
                   _isEditing
                       ? _EditableTextField(
-                    label: "Descripcion",
-                    initialValue: _description,
-                    onChanged: (value) {
-                      setState(() {
-                        _description = value;
-                      });
-                    },
-                  )
+                          label: "Descripcion",
+                          initialValue: _description,
+                          onChanged: (value) {
+                            setState(() {
+                              _description = value;
+                            });
+                          },
+                        )
                       : Text(
-                    _description,
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
+                          _description,
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -153,7 +371,8 @@ class _ProfilePageState extends State<ProfilePage> {
                         ),
                       if (linkedInUrl.isNotEmpty)
                         IconButton(
-                          icon: Icon(Icons.work), // Icono genérico, cámbialo según tus necesidades
+                          icon: Icon(Icons
+                              .work), // Icono genérico, cámbialo según tus necesidades
                           onPressed: () => _launchURL(linkedInUrl),
                         ),
                     ],
@@ -185,15 +404,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          SlidingBox(
-            controller: boxController,
-            minHeight: slidingBoxHeight,
-            maxHeight: MediaQuery.of(context).size.height * 0.0,
-            color: Theme.of(context).colorScheme.background,
-            style: BoxStyle.sheet,
-            bodyBuilder: (sc, pos) => _buildSlidingBoxContent(sc, pos),
-            collapsedBody: _collapsedSlidingBoxBody(),
-          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -214,120 +424,183 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _collapsedSlidingBoxBody() {
-    // Construye el cuerpo colapsado de tu SlidingBox aquí
-    return Center(
-      child: Text("Toca para expandir"),
+  void _mostrarServicios(
+      BuildContext context, String title, List<dynamic> servicios) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return ServiciosPopup(title: title, servicios: servicios);
+      },
     );
   }
 
+  //widget agregado para colocar una lista
+  Widget _buildServiciosList(List<dynamic> servicios) {
+    return servicios.isNotEmpty
+        ? ListView.builder(
+            itemCount: servicios.length,
+            itemBuilder: (context, index) {
+              final servicio = servicios[index];
+              return ListTile(
+                title: Text('Tipo: ${servicio['ROL_CHOICES'] ?? ''}'),
+                subtitle: Text('Titulo: ${servicio['titulo'] ?? ''}'),
+              );
+            },
+          )
+        : Center(
+            child: Text("No hay servicios disponibles"),
+          );
+  }
+  // ----------------------
+
+  Widget _collapsedSlidingBoxBody(
+      List<dynamic> servicios, bool mostrarOfertas) {
+    final serviciosFiltrados = mostrarOfertas
+        ? servicios
+            .where((servicio) => servicio['ROL_CHOICES'] == 'Oferta')
+            .toList()
+        : servicios
+            .where((servicio) => servicio['ROL_CHOICES'] == 'Demanda')
+            .toList();
+
+    return serviciosFiltrados.isNotEmpty
+        ? ListView.builder(
+            itemCount: serviciosFiltrados.length,
+            itemBuilder: (context, index) {
+              final servicio = serviciosFiltrados[index];
+              return ListTile(
+                title: Text('Tipo: ${servicio['ROL_CHOICES'] ?? ''}'),
+                subtitle: Text('Titulo: ${servicio['titulo'] ?? ''}'),
+              );
+            },
+          )
+        : Center(
+            child: Text(mostrarOfertas
+                ? "No hay ofertas disponibles"
+                : "No hay demandas disponibles"),
+          );
+  }
+
   Widget cardWithGutterAndAppBar() => TextButton(
-    onPressed: () => showDialog(
-      context: context,
-      builder: (builder) => XenPopupCard(
-        gutter: gutter,
-        body: ListView(
-          padding: EdgeInsets.all(16),
-          children: [
-            buildTextFormField(
-              label: 'Nombre',
-              initialValue: _name,
-              onChanged: (value) => setState(() => _name = value),
+        onPressed: () => showDialog(
+          context: context,
+          builder: (builder) => XenPopupCard(
+            gutter: gutter,
+            body: ListView(
+              padding: EdgeInsets.all(16),
+              children: [
+                buildTextFormField(
+                  //controller: _first_nameController,
+                  label: 'Nombre',
+                  initialValue: _name,
+                  onChanged: (value) => setState(() => _name = value),
+                ),
+                SizedBox(height: 16),
+                buildTextFormField(
+                  //controller: _last_nameController,
+                  label: 'Apellido',
+                  initialValue: last_name,
+                  onChanged: (value) => setState(() => last_name = value),
+                ),
+                SizedBox(height: 16),
+                buildTextFormField(
+                  //controller: _emailController,
+                  label: 'Email',
+                  initialValue: _email,
+                  onChanged: (value) => setState(() => _email = value),
+                ),
+                SizedBox(height: 16),
+                buildTextFormField(
+                  //controller: _telefonoController,
+                  label: 'Teléfono',
+                  initialValue: telefono,
+                  onChanged: (value) => setState(() => telefono = value),
+                ),
+                SizedBox(height: 16),
+                buildTextFormField(
+                  //controller: _direccionController,
+                  label: 'Dirección',
+                  initialValue: direccion,
+                  onChanged: (value) => setState(() => direccion = value),
+                ),
+                SizedBox(height: 16),
+                buildTextFormField(
+                  //controller: _documento_identificacionController,
+                  label: 'Documento de Identificación',
+                  initialValue: documennto_identificacion,
+                  onChanged: (value) =>
+                      setState(() => documennto_identificacion = value),
+                ),
+                SizedBox(height: 16),
+                buildDropdownField(
+                  controller: TextEditingController(text: genero),
+                  label: 'Género',
+                  value: genero,
+                  items: ['Masculino', 'Femenino', 'Otro'],
+                  onChanged: (value) => setState(() => genero = value!),
+                ),
+                SizedBox(height: 16),
+                buildTextFormField(
+                  //controller: _descripcionController,
+                  label: 'Descripción',
+                  initialValue: _description,
+                  onChanged: (value) => setState(() => _description = value),
+                ),
+                // SizedBox(height: 16),
+                // buildTextFormField(
+                //   //controller: _passwordController,
+                //   label: 'Contraseña',
+                //   initialValue: password,
+                //   onChanged: (value) => setState(() => password = value),
+                //   obscureText: true,
+                // ),
+                // SizedBox(height: 16),
+                // buildTextFormField(
+                //   //controller: _confirm_passwordController,
+                //   label: 'Confirmar Contraseña',
+                //   initialValue: confirm_password,
+                //   onChanged: (value) =>
+                //       setState(() => confirm_password = value),
+                //   obscureText: true,
+                // ),
+                // SizedBox(height: 16),
+                // buildTextFormField(
+                //
+                //   label: 'URL de Facebook',
+                //   initialValue: facebookUrl,
+                //   onChanged: (value) => setState(() => facebookUrl = value),
+                // ),
+                // SizedBox(height: 16),
+                // buildTextFormField(
+                //   label: 'URL de Instagram',
+                //   initialValue: instagramUrl,
+                //   onChanged: (value) => setState(() => instagramUrl = value),
+                // ),
+                // SizedBox(height: 16),
+                // buildTextFormField(
+                //   label: 'URL de LinkedIn',
+                //   initialValue: linkedInUrl,
+                //   onChanged: (value) => setState(() => linkedInUrl = value),
+                // ),
+                // SizedBox(height: 16),
+                _buildImagePickerField(), // Campo para seleccionar la imagen
+                SizedBox(height: 25),
+              ],
             ),
-            SizedBox(height: 16),
-            buildTextFormField(
-              label: 'Apellido',
-              initialValue: last_name,
-              onChanged: (value) => setState(() => last_name = value),
-            ),
-            SizedBox(height: 16),
-            buildTextFormField(
-              label: 'Email',
-              initialValue: email,
-              onChanged: (value) => setState(() => email = value),
-            ),
-            SizedBox(height: 16),
-            buildTextFormField(
-              label: 'Teléfono',
-              initialValue: telefono,
-              onChanged: (value) => setState(() => telefono = value),
-            ),
-            SizedBox(height: 16),
-            buildTextFormField(
-              label: 'Dirección',
-              initialValue: direccion,
-              onChanged: (value) => setState(() => direccion = value),
-            ),
-            SizedBox(height: 16),
-            buildTextFormField(
-              label: 'Documento de Identificación',
-              initialValue: documennto_identificacion,
-              onChanged: (value) =>
-                  setState(() => documennto_identificacion = value),
-            ),
-            SizedBox(height: 16),
-            buildDropdownField(
-              label: 'Género',
-              value: genero,
-              items: ['Masculino', 'Femenino', 'Otro'],
-              onChanged: (value) => setState(() => genero = value!),
-            ),
-            SizedBox(height: 16),
-            buildTextFormField(
-              label: 'Descripción',
-              initialValue: _description,
-              onChanged: (value) => setState(() => _description = value),
-            ),
-            SizedBox(height: 16),
-            buildTextFormField(
-              label: 'Contraseña',
-              initialValue: password,
-              onChanged: (value) => setState(() => password = value),
-              obscureText: true,
-            ),
-            SizedBox(height: 16),
-            buildTextFormField(
-              label: 'Confirmar Contraseña',
-              initialValue: confirm_password,
-              onChanged: (value) =>
-                  setState(() => confirm_password = value),
-              obscureText: true,
-            ),
-            SizedBox(height: 16),
-            buildTextFormField(
-              label: 'URL de Facebook',
-              initialValue: facebookUrl,
-              onChanged: (value) => setState(() => facebookUrl = value),
-            ),
-            SizedBox(height: 16),
-            buildTextFormField(
-              label: 'URL de Instagram',
-              initialValue: instagramUrl,
-              onChanged: (value) => setState(() => instagramUrl = value),
-            ),
-            SizedBox(height: 16),
-            buildTextFormField(
-              label: 'URL de LinkedIn',
-              initialValue: linkedInUrl,
-              onChanged: (value) => setState(() => linkedInUrl = value),
-            ),
-            SizedBox(height: 16),
-            _buildImagePickerField(), // Campo para seleccionar la imagen
-            SizedBox(height: 25),
-          ],
+          ),
         ),
-      ),
-    ),
-    child: const Text("Editar"),
-  );
+        child: const Text("Editar"),
+      );
 
   TextFormField buildTextFormField({
+    //required TextEditingController controller,
     required String label,
     required String initialValue,
     required Function(String) onChanged,
     bool obscureText = false,
   }) {
     return TextFormField(
+      //rcontroller: controller,
       initialValue: initialValue,
       decoration: InputDecoration(
         labelText: label,
@@ -350,7 +623,7 @@ class _ProfilePageState extends State<ProfilePage> {
           CircleAvatar(
             radius: 75, // El radio del CircleAvatar
             backgroundImage:
-            FileImage(_image!), // Muestra la imagen seleccionada
+                FileImage(_image!), // Muestra la imagen seleccionada
           )
         else
           CircleAvatar(
@@ -364,6 +637,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   DropdownButtonFormField<String> buildDropdownField({
+    required TextEditingController controller,
     required String label,
     required String value,
     required List<String> items,
@@ -429,9 +703,9 @@ class _ProfileInfoItemState extends State<ProfileInfoItem> {
           borderRadius: BorderRadius.circular(10),
           boxShadow: _isHovering
               ? [
-            BoxShadow(
-                color: Colors.blue, blurRadius: 10, offset: Offset(0, 0))
-          ]
+                  BoxShadow(
+                      color: Colors.blue, blurRadius: 10, offset: Offset(0, 0))
+                ]
               : [],
         ),
         child: Column(
@@ -460,9 +734,49 @@ class _ProfileInfoItemState extends State<ProfileInfoItem> {
   }
 }
 
+
+
+class ServiciosPopup extends StatelessWidget {
+  final String title;
+  final List<dynamic> servicios;
+
+  ServiciosPopup({required this.title, required this.servicios});
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(title),
+      content: _buildServiciosList(servicios),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text('Cerrar'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildServiciosList(List<dynamic> servicios) {
+    return servicios.isNotEmpty
+        ? Column(
+            children: servicios.map((servicio) {
+              return ListTile(
+                title: Text('Tipo: ${servicio['ROL_CHOICES'] ?? ''}'),
+                subtitle: Text('Titulo: ${servicio['titulo'] ?? ''}'),
+              );
+            }).toList(),
+          )
+        : Center(
+            child: Text("No hay servicios disponibles"),
+          );
+  }
+}
+
+//---------------------------de aqui para abajo todo es lo anterior
 class _ProfileInfoRow extends StatelessWidget {
   final VoidCallback showOffers;
   final VoidCallback showDemands;
+
   _ProfileInfoRow({
     Key? key,
     required this.showOffers,
@@ -479,16 +793,12 @@ class _ProfileInfoRow extends StatelessWidget {
           ProfileInfoItem(
             title: "Ofertas",
             value: 900,
-            onTap: () => context
-                .findAncestorStateOfType<_ProfilePageState>()
-                ?.showOffers(),
+            onTap: showOffers,
           ),
           ProfileInfoItem(
             title: "Demandas",
             value: 120,
-            onTap: () => context
-                .findAncestorStateOfType<_ProfilePageState>()
-                ?.showDemands(),
+            onTap: showDemands,
           ),
           ProfileInfoItem(
             title: "N horas disponible",
@@ -527,24 +837,24 @@ class _EditableTextField extends StatelessWidget {
 }
 
 Widget _singleItem(BuildContext context, ProfileInfoItem item) => Column(
-  mainAxisAlignment: MainAxisAlignment.center,
-  children: [
-    Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Text(
-        item.value.toString(),
-        style: const TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 20,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            item.value.toString(),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 20,
+            ),
+          ),
         ),
-      ),
-    ),
-    Text(
-      item.title,
-      style: Theme.of(context).textTheme.caption,
-    )
-  ],
-);
+        Text(
+          item.title,
+          style: Theme.of(context).textTheme.caption,
+        )
+      ],
+    );
 
 class _TopPortion extends StatelessWidget {
   const _TopPortion({Key? key, required this.profileImage}) : super(key: key);
@@ -554,16 +864,14 @@ class _TopPortion extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      clipBehavior:
-      Clip.none, // Permite que los hijos se dibujen fuera de la caja
+      clipBehavior: Clip.none,
       alignment: Alignment.center,
       children: [
         Container(
-          height: 300, // Altura para la foto de portada
+          height: 200, // Altura para la foto de portada
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage(
-                  "images/bdt_portada.jpg"),
+              image: AssetImage("images/bdt_portada.jpg"),
               fit: BoxFit.cover,
             ),
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(50)),
@@ -580,15 +888,15 @@ class _TopPortion extends StatelessWidget {
                     fit: StackFit.expand,
                     children: [
                       const ProfileView(
-                        //ANiadir un if
-                        image: AssetImage("images/Bank.jpeg"),
+                        image: AssetImage(
+                            "images/Bank.jpeg"), // Muestra la imagen seleccionada
                       ),
                       Positioned(
                         bottom: -75,
                         child: CircleAvatar(
                           radius: 20,
                           backgroundColor:
-                          Theme.of(context).scaffoldBackgroundColor,
+                              Theme.of(context).scaffoldBackgroundColor,
                           child: Container(
                             margin: const EdgeInsets.all(8.0),
                             decoration: const BoxDecoration(
@@ -624,7 +932,7 @@ class _EditableRatingStarsState extends State<EditableRatingStars> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         5,
-            (index) => IconButton(
+        (index) => IconButton(
           icon: Icon(
             index < _rating.floor() ? Icons.star : Icons.star_border,
             color: Colors.amber,

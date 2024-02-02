@@ -9,7 +9,7 @@ class Servicio {
   final int tiempo_requerido;
   final String fecha_creacion;
   final String fecha_vigente;
-  final int propietario;
+  final int? propietario;
 
   final String estadoVigencia;
   final String estadoServicio;

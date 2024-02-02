@@ -1,8 +1,21 @@
 import 'package:bancodt/src/routes/routes.dart';
 import 'package:flutter/material.dart';
+import 'package:bancodt/src/providers/ChangeNotifier.dart';
+import 'package:bancodt/src/providers/usuario_provider.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => UsuarioProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
+
 }
 
 class MyApp extends StatelessWidget {

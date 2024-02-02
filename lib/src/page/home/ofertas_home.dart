@@ -1,12 +1,12 @@
-import 'dart:html';
-import 'dart:math';
-
 import 'package:bancodt/src/page/home/MyClipper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bancodt/constantes/const.dart';
+import 'package:bancodt/src/modelos/servicio_modelo.dart';
+import 'package:bancodt/src/page/chat/chat.dart';
+
 
 class OfertasHome extends StatefulWidget {
   const OfertasHome({super.key});
@@ -98,6 +98,7 @@ class _OfertasHome extends State<OfertasHome> {
                     ),
                     child: Row(
                       children: <Widget>[
+                        //DESDE AQUI SE MUESTRA LA PARTE DE ARRIBA DONDE SE VISUALIZA LA MAJOR PUNTUADA
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -155,6 +156,7 @@ class _OfertasHome extends State<OfertasHome> {
                     ),
                   ],
                 ),
+
                 SizedBox(height: 10),
                 servicios.isNotEmpty
                     ? ListView.builder(
@@ -162,16 +164,13 @@ class _OfertasHome extends State<OfertasHome> {
                   physics:  NeverScrollableScrollPhysics(),
                   itemCount: servicios.length,
                   itemBuilder: (context, index){
-                    final servicio = servicios[index];
-                    final titulo = servicio['titulo'] as String?;
-                    final descripcion = servicio['descripcion'] as String?;
+                    final servicioMap = servicios[index];
+                    final servicio = Servicio.fromJson(servicioMap);
                     return GestureDetector(
-                      onTap: () => _showDetailsDialog(context, titulo!, descripcion!, servicio),
+                      onTap: () => _showDetailsDialog(context, servicio.titulo,
+                          servicio.descripcion_actividad, servicio),
                       child: BookCard(
-                        title: servicio['titulo'] ?? 'No hay titulo',
-                        descripcion: servicio['descripcion'] ?? 'No hay descripcion',
-                        costo: servicio['costo'],
-                        imgUrl: 'assets/images/google.png',
+                        servicio: servicio,
                       ),
                     );
                   },
@@ -180,23 +179,6 @@ class _OfertasHome extends State<OfertasHome> {
               ],
             ),
           ),
-
-          // ListView(
-          //   children: [
-          //     Expanded(
-          //       child:ListView.builder(
-          //           itemCount: servicios.length,
-          //           itemBuilder: (context, index) {
-          //             final servicio = servicios[index];
-          //             return  ListTile(
-          //               title: Text(servicio['ROL_CHOICES']),
-          //               subtitle: Text(servicio['titulo']),
-          //             );
-          //           }
-          //       ),
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );
@@ -211,6 +193,8 @@ class _OfertasHome extends State<OfertasHome> {
             child: ListBody(
               children: <Widget>[
                 Text(descripcion),
+                Text('Fecha de Creacion: ${servicio.fecha_creacion}'),
+                Text('Fecha vigente:  ${servicio.fecha_vigente}'),
                 // Más detalles aquí
               ],
             ),
@@ -225,68 +209,32 @@ class _OfertasHome extends State<OfertasHome> {
               onPressed: () {
                 // Acción del botón
                 Navigator.of(context).pop();
+                showDialog(context: context, builder: (BuildContext context){
+                  return AlertDialog(
+                    content: ChatPage(),
+                  );
+                },
+                );
               },
             ),
           ],
         );
       },
     );
-    // showDialog(
-    //   context: context,
-    //   builder: (BuildContext context) {
-    //     return AlertDialog(
-    //       title: Text(title),
-    //       content: SingleChildScrollView(
-    //         child: ListBody(
-    //           children: <Widget>[
-    //             Text(descripcion),
-    //             Text('Detalle adicional: ${servicio['detalleAdicional']}'),
-    //             // Más detalles aquí
-    //           ],
-    //         ),
-    //       ),
-    //       actions: <Widget>[
-    //         TextButton(
-    //           child: Text('Cerrar'),
-    //           onPressed: () => Navigator.of(context).pop(),
-    //         ),
-    //         ElevatedButton(
-    //           child: Text('Aplicar'),
-    //           onPressed: () {
-    //             // Acción del botón
-    //             Navigator.of(context).pop();
-    //           },
-    //         ),
-    //       ],
-    //     );
-    //   },
-    // );
   }
 }
 
 class BookCard extends StatelessWidget {
-  final String? title;
-  final String? descripcion;
-  final int? costo;
-  final String? imgUrl;
+  final Servicio servicio;
 
-  const BookCard({
-    this.title,
-    this.descripcion,
-    this.costo,
-    this.imgUrl,
-    // required this.title,
-    // required this.descripcion,
-    // required this.costo,
-    // required this.imgUrl,
-  });
+  const BookCard({Key? key, required this.servicio}) : super(key: key);  // final String? title;
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
       padding: EdgeInsets.all(10.0),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.blueAccent,
         borderRadius: BorderRadius.circular(10.0),
         boxShadow: [
           BoxShadow(
@@ -299,25 +247,7 @@ class BookCard extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          imgUrl != null
-              ? Image.network(
-            imgUrl !,
-            width: 100,
-            height: 100,
-            fit: BoxFit.cover,
-          ) : Container(),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(left: 10.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  title != null? Text(descripcion!) : Container(),
-                ],
-              ),
-            ),
-          ),
-
+          // Aquí puedes agregar la imagen si tu servicio tiene una URL de imagen
           Expanded(
             child: Padding(
               padding: EdgeInsets.only(left: 10.0),
@@ -325,7 +255,7 @@ class BookCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    title ?? 'Titulo no disponible',
+                    servicio.titulo,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -334,102 +264,20 @@ class BookCard extends StatelessWidget {
                   ),
                   SizedBox(height: 5),
                   Text(
-                    descripcion ?? 'Descripcion no disponible',
+                    servicio.descripcion_actividad,
                     style: TextStyle(fontSize: 14),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 2,
                   ),
-                  SizedBox(height: 10),
-                  Row(
-                    children: costo != null
-                        ? List.generate(
-                      costo!,
-                          (index) => Icon(
-                        Icons.timelapse,
-                        color: Colors.amber,
-                        size: 20,
-                      ),
-                    )
-                        :[Text('Costo no disponible')],
-                  ),
+                  // Aquí puedes agregar más detalles del servicio si es necesario
                 ],
               ),
             ),
           ),
+          // Otros elementos que desees agregar, como botones o iconos
         ],
       ),
     );
-
   }
 
 }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return GestureDetector(
-//       onTap: () {
-//         Navigator.push(context, MaterialPageRoute(builder: (context) {
-//           return LeerOferta();
-//         }));
-//       },
-//       child: Container(
-//         margin: EdgeInsets.symmetric(vertical: 5.0),
-//         padding: EdgeInsets.symmetric(horizontal: 5.0),
-//         height: 170,
-//         width: double.infinity,
-//         decoration: BoxDecoration(
-//           color: Colors.white,
-//           borderRadius: BorderRadius.circular(10.0),
-//           boxShadow: [
-//             BoxShadow(
-//               color: Colors.grey,
-//               blurRadius: 8,
-//             ),
-//           ],
-//         ),
-//         child: Row(
-//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//           children: <Widget>[
-//             Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               mainAxisAlignment: MainAxisAlignment.center,
-//               children: <Widget>[
-//                 Text(
-//                   title,
-//                   style: TextStyle(
-//                     fontSize: 25,
-//                     fontWeight: FontWeight.w600,
-//                   ),
-//                 ),
-//                 Text(
-//                   descripcion,
-//                   style: TextStyle(
-//                     fontSize: 15,
-//                   ),
-//                 ),
-//                 Row(
-//                   children: <Widget>[
-//                     for (int i = 0; i < costo; i++)
-//                       Text(
-//                         '${i + 1}', // Puedes ajustar la lógica según tus necesidades
-//                         style: TextStyle(
-//                           color: Colors.amber,
-//                           fontSize: 18.0,
-//                           fontWeight: FontWeight.bold,
-//                         ),
-//                       ),
-//                   ],
-//                 ),
-//               ],
-//             ),
-//             Image.asset(
-//               imgUrl,
-//               width: 160,
-//               fit: BoxFit.fitWidth,
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

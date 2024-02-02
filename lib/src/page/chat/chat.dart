@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:firebase_core/firebase_core.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
@@ -15,10 +13,6 @@ import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:bancodt/src/page/transaccion/transaccionHoras_page.dart';
 import 'package:uuid/uuid.dart';
-
-void main() {
-  initializeDateFormatting().then((_) => runApp(const chatPage()));
-}
 
 class chatPage extends StatelessWidget {
   const chatPage({super.key});
@@ -236,7 +230,7 @@ class _ChatPageState extends State<ChatPage> {
               const Text('Chat Page'),
               //Text(widget.chatPartnerName),
               IconButton(
-                icon: const Icon(Icons.transfer_within_a_station),
+                icon: const Icon(Icons.monetization_on),
                 onPressed: () {
                   Navigator.pop(context);
                   Navigator.of(context).pushAndRemoveUntil(
@@ -246,7 +240,7 @@ class _ChatPageState extends State<ChatPage> {
                 },
               ),
               // Espacio en blanco para equilibrar el título y el ícono
-              const Opacity(opacity: 0, child: Icon(Icons.transfer_within_a_station)),
+              const Opacity(opacity: 0, child: Icon(Icons.monetization_on)),
             ],
           ),
         ),

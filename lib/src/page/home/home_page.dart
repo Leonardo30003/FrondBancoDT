@@ -1,10 +1,11 @@
 import 'package:bancodt/src/page/Chat/chat.dart';
+import 'package:bancodt/src/page/chat/prueba_chat.dart';
 import 'package:bancodt/src/page/crearOfertaDemanda/crearOfertaDemanda_page.dart';
 import 'package:bancodt/src/page/demandas/demandas/demandas_page.dart';
 import 'package:bancodt/src/page/historial/historial_page.dart';
 import 'package:bancodt/src/page/home/ofertas_home.dart';
 import 'package:bancodt/src/page/perfil/perfil_page.dart';
-import 'package:bancodt/src/page/transaccion/transaccionHoras_page.dart';
+import 'package:bancodt/src/page/transaccion/VerTransaccion.dart';
 import 'package:flutter/material.dart';
 import 'package:sidebarx/sidebarx.dart';
 import 'dart:core';
@@ -165,6 +166,10 @@ class ExampleSidebarX extends StatelessWidget {
             label: "Crear Oferta/Demanda"
         ),
         const SidebarXItem(
+            icon: Icons.mark_email_read,
+            label: "Buzon de Mensajes"
+        ),
+        const SidebarXItem(
             icon: Icons.add_box_rounded,
             label: "Chat"
         ),
@@ -207,9 +212,11 @@ class _ScreensExample extends StatelessWidget {
           case 4:
             return CreateOfferDemandPage(); // Asumiendo que esta es una página definida
           case 5:
-            return ChatPage(); // Asumiendo que esta es una página definida
+            return PruebaChat(); // Asumiendo que esta es una página definida
           case 6:
-            return TransaccionHoras();
+            return chatPage();
+          case 7:
+            return VerTransaccion();
           default:
             return Center(
               child: Text(
@@ -238,7 +245,11 @@ String _getTitleByIndex(int index) {
     case 5:
       return 'Crear demanda';
     case 6:
-       return 'Transaccion';
+      return 'Transaccion';
+    case 7:
+      return 'Buzon de Mensajes';
+    case 8:
+      return 'Chat';
     default:
       return 'Not found page';
   }

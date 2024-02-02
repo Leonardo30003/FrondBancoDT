@@ -1,6 +1,10 @@
+import 'package:bancodt/src/page/Chat/chat.dart';
+import 'package:bancodt/src/page/transaccion/transaccionTerminada.dart';
 import 'package:flutter/material.dart';
 
-
+void main() {
+  runApp(TransaccionHoras());
+}
 
 class TransaccionHoras extends StatelessWidget {
   @override
@@ -25,7 +29,12 @@ class PaymentDetailsScreen extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            // Handle back button
+            Navigator.pop(context);
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (context) => chatPage()),
+                  (Route<dynamic> route) => false,
+            );
+
           },
         ),
       ),
@@ -35,16 +44,20 @@ class PaymentDetailsScreen extends StatelessWidget {
           _buildRecipientSection(),
           _buildTransactionDetails(),
           _buildTransactionBreakdown(),
-          _buildNotesSection(),
-          SizedBox(height: 24),
+          SizedBox(height: 20),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
               minimumSize: Size(double.infinity, 50), // width and height
             ),
             onPressed: () {
-              // Handle Report Now button
+              Navigator.pop(context);
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => transaccionTerminada()),
+                    (Route<dynamic> route) => false,
+              );
+
             },
-            child: Text('Report Now'),
+            child: Text('Transferir'),
           ),
         ],
       ),
@@ -67,9 +80,8 @@ class PaymentDetailsScreen extends StatelessWidget {
       children: [
         _buildDetailItem('Id de transaccion', '123456'),
         _buildDetailItem('Transaccion', 'viernes,'),
-        _buildDetailItem('Monto', '\$20.00'),
+        _buildDetailItem('Horas', '5H'),
         _buildDetailItem('Estado', 'Completado'),
-        _buildDetailItem('Metodo de pago', 'tarjeta credito'),
       ],
     );
   }
@@ -79,19 +91,8 @@ class PaymentDetailsScreen extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Divider(),
-        _buildDetailItem('Total', '\$18.00'),
+        _buildDetailItem('Total', '5H'),
       ],
-    );
-  }
-
-  Widget _buildNotesSection() {
-    return TextFormField(
-      initialValue: 'Transaccion...',
-      maxLines: null,
-      decoration: InputDecoration(
-        labelText: 'Notas',
-        border: OutlineInputBorder(),
-      ),
     );
   }
 
