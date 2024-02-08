@@ -1,3 +1,4 @@
+import 'package:bancodt/src/page/chat/prueba_chat.dart';
 import 'package:bancodt/src/page/home/MyClipper.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'dart:convert';
 import 'package:bancodt/constantes/const.dart';
 import 'package:bancodt/src/modelos/servicio_modelo.dart';
 import 'package:bancodt/src/page/chat/chat.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class OfertasHome extends StatefulWidget {
@@ -151,7 +153,7 @@ class _OfertasHome extends State<OfertasHome> {
                       "Ultimas Ofertas",
                       style: TextStyle(
                         fontSize: 20,
-                        color: Colors.grey,
+                        color: Colors.blueAccent,
                       ),
                     ),
                   ],
@@ -195,6 +197,8 @@ class _OfertasHome extends State<OfertasHome> {
                 Text(descripcion),
                 Text('Fecha de Creacion: ${servicio.fecha_creacion}'),
                 Text('Fecha vigente:  ${servicio.fecha_vigente}'),
+                Text('Cuenta:${servicio.propietario}'),
+                Text('Horas:${servicio.tiempo_requerido}')
                 // Más detalles aquí
               ],
             ),
@@ -207,7 +211,18 @@ class _OfertasHome extends State<OfertasHome> {
             ElevatedButton(
               child: Text('Aplicar'),
               onPressed: () {
-                // Acción del botón
+                //Este metodo permite pasar los datos entre paginas
+                void guardarDatosEnSharedPreferences() async {
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  Map<String, dynamic> datos = {
+                    'servicio':servicio.id,
+                    'horas':servicio.tiempo_requerido,
+                    'propietario':servicio.propietario
+                  };
+                  prefs.setString('datos', json.encode(datos));
+                }
+                guardarDatosEnSharedPreferences();
+                print(context);
                 Navigator.of(context).pop();
                 showDialog(context: context, builder: (BuildContext context){
                   return AlertDialog(
@@ -234,11 +249,11 @@ class BookCard extends StatelessWidget {
       margin: EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
       padding: EdgeInsets.all(10.0),
       decoration: BoxDecoration(
-        color: Colors.blueAccent,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10.0),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.5),
+            color: Colors.blueAccent.withOpacity(0.5),
             spreadRadius: 2,
             blurRadius: 5,
             offset: Offset(0, 3),

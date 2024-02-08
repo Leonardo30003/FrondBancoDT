@@ -231,13 +231,35 @@ class _ChatPageState extends State<ChatPage> {
               //Text(widget.chatPartnerName),
               IconButton(
                 icon: const Icon(Icons.monetization_on),
-                onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => TransaccionHoras()),
-                        (Route<dynamic> route) => false,
+                 onPressed: () {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context){
+                        return AlertDialog(
+                          content: Container(
+                            //------------TAMANIO DEL CONTENEDOR PARA LAS TRANSFERENCIAS----------------
+                            width: 300,
+                            height: 500,
+                            child: TransaccionHoras(),
+                          ),
+                          // actions: <Widget>[
+                          //   TextButton(
+                          //       child: Text('Cerrar'),
+                          //     onPressed: (){
+                          //         Navigator.of(context).pop();
+                          //     },
+                          //
+                          //   )
+                          // ],
+                        );
+                      }
                   );
-                },
+                //   Navigator.pop(context);
+                //   // Navigator.of(context).pushAndRemoveUntil(
+                //   //   MaterialPageRoute(builder: (context) => TransaccionHoras()),
+                //   //       (Route<dynamic> route) => false,
+                //   // );
+                 },
               ),
               // Espacio en blanco para equilibrar el título y el ícono
               const Opacity(opacity: 0, child: Icon(Icons.monetization_on)),

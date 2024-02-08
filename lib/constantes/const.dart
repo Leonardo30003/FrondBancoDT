@@ -10,8 +10,8 @@ const String buscar_usuario =
     'http://localhost:8000/tiempo/api/usuario/buscar_por_correo/';
 // constantes para cuenta
 const String crear_cuenta = 'http://localhost:8000/tiempo/api/cuentas';
-const String burcar_cuenta_usuario =
-    'http://localhost:8000/tiempo/api/cuenta/buscarCuentaUsuario';
+const String burcar_cuenta_usuario ='http://localhost:8000/tiempo/api/cuenta/buscarCuentaUsuario';
+const String buscarCuentaIdCuenta='http://127.0.0.1:8000/tiempo/api/buscarCuentaIdCuenta/';
 // constantes para rol
 const String crear_rols = 'http://localhost:8000/tiempo/api/rols';
 const String crear_categoria = 'http://localhost:8000/tiempo/api/categorias';

@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bancodt/constantes/const.dart';
-import 'package:bancodt/constantes/widgets/widgets_personalizados.dart';
+//import 'package:bancodt/constantes/widgets/widgets_personalizados.dart';
 import 'package:bancodt/src/modelos/servicio_modelo.dart';
 import 'package:bancodt/src/page/chat/chat.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class DemandasHome extends StatefulWidget {
@@ -42,7 +43,7 @@ class _DemandasHome extends State<DemandasHome> {
     return Scaffold(
       body: ListView(
         children: <Widget>[
-          cabecera("Banco del Tiempo - Demandas"), // Utiliza el widget 'cabecera' personalizado
+          //cabecera("Banco del Tiempo - Demandas"), Utiliza el widget 'cabecera' personalizado
           Container(
             padding: EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
@@ -98,6 +99,7 @@ class _DemandasHome extends State<DemandasHome> {
                 Text(descripcion),
                 Text('Fecha de Creacion: ${servicio.fecha_creacion}'),
                 Text('Fecha vigente: ${servicio.fecha_vigente}'),
+                Text('Cuenta:${servicio.propietario}')
               ],
             ),
           ),
@@ -109,7 +111,18 @@ class _DemandasHome extends State<DemandasHome> {
             ElevatedButton(
               child: Text('Aplicar'),
               onPressed: () {
-                // Acción del botón
+                //Este metodo permite pasar los datos entre paginas
+                void guardarDatosEnSharedPreferences() async {
+                  SharedPreferences prefs = await SharedPreferences.getInstance();
+                  Map<String, dynamic> datos = {
+                    'servicio':servicio.id,
+                    'horas':servicio.tiempo_requerido,
+                    'propietario':servicio.propietario
+                  };
+                  prefs.setString('datos', json.encode(datos));
+                }
+                guardarDatosEnSharedPreferences();
+                print(context);
                 Navigator.of(context).pop();
                 showDialog(context: context, builder: (BuildContext context){
                   return AlertDialog(

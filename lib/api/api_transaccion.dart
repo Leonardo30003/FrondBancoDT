@@ -4,22 +4,24 @@ import 'package:http/http.dart' as http;
 import 'package:bancodt/src/modelos/transaccion_modelo.dart';
 import 'package:bancodt/constantes/const.dart';
 
-
 class TransaccionApi {
-  static const String baseUrl = crear_calificaciones;
+  static const String baseUrl = crear_transacciones;
   // Reemplaza con tu URL de Django
 
-  static Future<void> crearTransaccionTiempo(TransaccionTiempo transaccionTiempo) async {
+  static Future<void> crearTransaccionTiempo(
+      TransaccionTiempo transaccionTiempo) async {
     final response = await http.post(
       Uri.parse(baseUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(transaccionTiempo.toJson()),
     );
+    print(response.body);
 
     if (response.statusCode == 201) {
       print('TransaccionTiempo creado exitosamente');
     } else {
-      print('Error al crear el TransaccionTiempo: ${response.statusCode}');
+      print(
+          'Error al crear el TransaccionTiempo dentro del api: ${response.statusCode}');
     }
   }
 
@@ -45,7 +47,8 @@ class TransaccionApi {
       final List<dynamic> data = jsonDecode(response.body);
       return data.map((e) => TransaccionTiempo.fromJson(e)).toList();
     } else {
-      throw Exception('Error al obtener TransaccionTiempo: ${response.statusCode}');
+      throw Exception(
+          'Error al obtener TransaccionTiempo: ${response.statusCode}');
     }
   }
 

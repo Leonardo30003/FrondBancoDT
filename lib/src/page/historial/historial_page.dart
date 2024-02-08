@@ -3,7 +3,7 @@ import 'package:bancodt/constantes/const.dart';
 import 'package:bancodt/src/page/home/MyClipper.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:bancodt/constantes/widgets/widgets_personalizados.dart';
+//import 'package:bancodt/constantes/widgets/widgets_personalizados.dart';
 
 class HistorialPage extends StatefulWidget {
   const HistorialPage({super.key});
@@ -42,7 +42,7 @@ class _HistorialPageState extends State<HistorialPage> {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          cabecera("Historial"),
+          //cabecera("Historial"),
           Container(
             padding: EdgeInsets.all(20.0),
             color: azulUide,

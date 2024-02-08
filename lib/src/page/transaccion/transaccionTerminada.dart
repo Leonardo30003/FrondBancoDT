@@ -2,15 +2,12 @@ import 'package:bancodt/src/page/home/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-void main() {
-  runApp(transaccionTerminada());
-}
-
 class transaccionTerminada extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Banco de Tiempo',
+      debugShowCheckedModeBanner: false, // Desactiva el banner de depuración
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -81,17 +78,30 @@ class _RatingScreenState extends State<RatingScreen> {
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => HomePage()),
-                      (Route<dynamic> route) => false,
-                );
+                // Cierra el AlertDialog primero
+                Navigator.of(context, rootNavigator: true).pop();
 
+                // Espera un frame para asegurarte de que el pop se ha procesado antes de navegar
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (context) => HomePage()),
+                        (Route<dynamic> route) => false,
+                  );
+                });
               },
               child: Text('Calificar y terminar'),
               style: ElevatedButton.styleFrom(
                 shape: StadiumBorder(),
               ),
             ),
+
+
+            // child: Text('Calificar y terminar'),
+              // style: ElevatedButton.styleFrom(
+              //   shape: StadiumBorder(),
+              // ),
+
+
           ],
         ),
       ),

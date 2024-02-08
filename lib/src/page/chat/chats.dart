@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:bancodt/src/page/chat/chat.dart';
 
 
-void main() {
-  runApp(ChatsPage());
-}
 
 class ChatsPage extends StatelessWidget {
   @override

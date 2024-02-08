@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 import '../../modelos/transaccion_modelo.dart';
 
 
+
 class VerTransaccion extends StatefulWidget {
   const VerTransaccion({super.key});
 

@@ -1,7 +1,5 @@
-
-import 'package:bancodt/src/modelos/usuarios_modelo.dart';
-
 class Servicio {
+  final int? id;
   final String ROL_CHOICES;
   final String titulo;
   final String descripcion_actividad;
@@ -16,6 +14,7 @@ class Servicio {
 
 
   const Servicio({
+    this.id,
     required this.ROL_CHOICES,
     required this.titulo,
     required this.descripcion_actividad,
@@ -28,6 +27,7 @@ class Servicio {
   });
   Map<String,dynamic>toJson(){
     return{
+      'id':id,
       'ROL_CHOICES':ROL_CHOICES,
       'titulo':titulo,
       'descripcion_actividad':descripcion_actividad,
@@ -41,6 +41,7 @@ class Servicio {
   }
   factory Servicio.fromJson(Map<String,dynamic>json){
     return Servicio(
+        id:json['id'],
         ROL_CHOICES:json['ROL_CHOICES'],
         titulo:json['titulo'],
         descripcion_actividad:json['descripcion_actividad'],

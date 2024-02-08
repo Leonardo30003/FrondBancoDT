@@ -52,9 +52,9 @@ class _ProfilePageState extends State<ProfilePage> {
   // codigo para cargar la lista de servicios por oferta/demandas
 
   final fechaCreacionFormatted =
-      DateFormat('yyyy-MM-dd').format(DateTime.now());
+  DateFormat('yyyy-MM-dd').format(DateTime.now());
   final fechaActualizacionFormatted =
-      DateFormat('yyyy-MM-dd').format(DateTime.now());
+  DateFormat('yyyy-MM-dd').format(DateTime.now());
 
   void _actualizarUsuario() async {
     Usuario usuarioActual = await UsuarioApi.obtenerUsuarioPorId(_id);
@@ -169,6 +169,8 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     }
   } */
+  final _formKey = GlobalKey<FormState>(); // Agregar al inicio de la clase
+
 
   @override
   void initState() {
@@ -268,7 +270,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
     final XFile? pickedFile =
-        await _picker.pickImage(source: ImageSource.gallery);
+    await _picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -307,54 +309,54 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: <Widget>[
                   _isEditing
                       ? _EditableTextField(
-                          label: "Nombre:",
-                          initialValue: _name,
-                          onChanged: (value) {
-                            setState(() {
-                              _name = value;
-                            });
-                          },
-                        )
+                    label: "Nombre:",
+                    initialValue: _name,
+                    onChanged: (value) {
+                      setState(() {
+                        _name = value;
+                      });
+                    },
+                  )
                       : Text(
-                          _name,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline6
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
+                    _name,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 10),
                   _isEditing
                       ? _EditableTextField(
-                          label: "Correo:",
-                          initialValue: _email,
-                          onChanged: (value) {
-                            setState(() {
-                              _email = value;
-                            });
-                          },
-                        )
+                    label: "Correo:",
+                    initialValue: _email,
+                    onChanged: (value) {
+                      setState(() {
+                        _email = value;
+                      });
+                    },
+                  )
                       : Text(
-                          _email,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headline6
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
+                    _email,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline6
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 16),
                   _isEditing
                       ? _EditableTextField(
-                          label: "Descripcion",
-                          initialValue: _description,
-                          onChanged: (value) {
-                            setState(() {
-                              _description = value;
-                            });
-                          },
-                        )
+                    label: "Descripcion",
+                    initialValue: _description,
+                    onChanged: (value) {
+                      setState(() {
+                        _description = value;
+                      });
+                    },
+                  )
                       : Text(
-                          _description,
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
+                    _description,
+                    style: Theme.of(context).textTheme.bodyText1,
+                  ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -406,14 +408,14 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            _isSlidingBoxVisible = !_isSlidingBoxVisible;
-          });
-        },
-        child: Icon(Icons.edit),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     setState(() {
+      //       _isSlidingBoxVisible = !_isSlidingBoxVisible;
+      //     });
+      //   },
+      //   child: Icon(Icons.edit),
+      // ),
     );
   }
 
@@ -438,18 +440,18 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildServiciosList(List<dynamic> servicios) {
     return servicios.isNotEmpty
         ? ListView.builder(
-            itemCount: servicios.length,
-            itemBuilder: (context, index) {
-              final servicio = servicios[index];
-              return ListTile(
-                title: Text('Tipo: ${servicio['ROL_CHOICES'] ?? ''}'),
-                subtitle: Text('Titulo: ${servicio['titulo'] ?? ''}'),
-              );
-            },
-          )
+      itemCount: servicios.length,
+      itemBuilder: (context, index) {
+        final servicio = servicios[index];
+        return ListTile(
+          title: Text('Tipo: ${servicio['ROL_CHOICES'] ?? ''}'),
+          subtitle: Text('Titulo: ${servicio['titulo'] ?? ''}'),
+        );
+      },
+    )
         : Center(
-            child: Text("No hay servicios disponibles"),
-          );
+      child: Text("No hay servicios disponibles"),
+    );
   }
   // ----------------------
 
@@ -457,160 +459,272 @@ class _ProfilePageState extends State<ProfilePage> {
       List<dynamic> servicios, bool mostrarOfertas) {
     final serviciosFiltrados = mostrarOfertas
         ? servicios
-            .where((servicio) => servicio['ROL_CHOICES'] == 'Oferta')
-            .toList()
+        .where((servicio) => servicio['ROL_CHOICES'] == 'Oferta')
+        .toList()
         : servicios
-            .where((servicio) => servicio['ROL_CHOICES'] == 'Demanda')
-            .toList();
+        .where((servicio) => servicio['ROL_CHOICES'] == 'Demanda')
+        .toList();
 
     return serviciosFiltrados.isNotEmpty
         ? ListView.builder(
-            itemCount: serviciosFiltrados.length,
-            itemBuilder: (context, index) {
-              final servicio = serviciosFiltrados[index];
-              return ListTile(
-                title: Text('Tipo: ${servicio['ROL_CHOICES'] ?? ''}'),
-                subtitle: Text('Titulo: ${servicio['titulo'] ?? ''}'),
-              );
-            },
-          )
+      itemCount: serviciosFiltrados.length,
+      itemBuilder: (context, index) {
+        final servicio = serviciosFiltrados[index];
+        return ListTile(
+          title: Text('Tipo: ${servicio['ROL_CHOICES'] ?? ''}'),
+          subtitle: Text('Titulo: ${servicio['titulo'] ?? ''}'),
+        );
+      },
+    )
         : Center(
-            child: Text(mostrarOfertas
-                ? "No hay ofertas disponibles"
-                : "No hay demandas disponibles"),
-          );
-  }
-
-  Widget cardWithGutterAndAppBar() => TextButton(
-        onPressed: () => showDialog(
-          context: context,
-          builder: (builder) => XenPopupCard(
-            gutter: gutter,
-            body: ListView(
-              padding: EdgeInsets.all(16),
-              children: [
-                buildTextFormField(
-                  //controller: _first_nameController,
-                  label: 'Nombre',
-                  initialValue: _name,
-                  onChanged: (value) => setState(() => _name = value),
-                ),
-                SizedBox(height: 16),
-                buildTextFormField(
-                  //controller: _last_nameController,
-                  label: 'Apellido',
-                  initialValue: last_name,
-                  onChanged: (value) => setState(() => last_name = value),
-                ),
-                SizedBox(height: 16),
-                buildTextFormField(
-                  //controller: _emailController,
-                  label: 'Email',
-                  initialValue: _email,
-                  onChanged: (value) => setState(() => _email = value),
-                ),
-                SizedBox(height: 16),
-                buildTextFormField(
-                  //controller: _telefonoController,
-                  label: 'Teléfono',
-                  initialValue: telefono,
-                  onChanged: (value) => setState(() => telefono = value),
-                ),
-                SizedBox(height: 16),
-                buildTextFormField(
-                  //controller: _direccionController,
-                  label: 'Dirección',
-                  initialValue: direccion,
-                  onChanged: (value) => setState(() => direccion = value),
-                ),
-                SizedBox(height: 16),
-                buildTextFormField(
-                  //controller: _documento_identificacionController,
-                  label: 'Documento de Identificación',
-                  initialValue: documennto_identificacion,
-                  onChanged: (value) =>
-                      setState(() => documennto_identificacion = value),
-                ),
-                SizedBox(height: 16),
-                buildDropdownField(
-                  controller: TextEditingController(text: genero),
-                  label: 'Género',
-                  value: genero,
-                  items: ['Masculino', 'Femenino', 'Otro'],
-                  onChanged: (value) => setState(() => genero = value!),
-                ),
-                SizedBox(height: 16),
-                buildTextFormField(
-                  //controller: _descripcionController,
-                  label: 'Descripción',
-                  initialValue: _description,
-                  onChanged: (value) => setState(() => _description = value),
-                ),
-                // SizedBox(height: 16),
-                // buildTextFormField(
-                //   //controller: _passwordController,
-                //   label: 'Contraseña',
-                //   initialValue: password,
-                //   onChanged: (value) => setState(() => password = value),
-                //   obscureText: true,
-                // ),
-                // SizedBox(height: 16),
-                // buildTextFormField(
-                //   //controller: _confirm_passwordController,
-                //   label: 'Confirmar Contraseña',
-                //   initialValue: confirm_password,
-                //   onChanged: (value) =>
-                //       setState(() => confirm_password = value),
-                //   obscureText: true,
-                // ),
-                // SizedBox(height: 16),
-                // buildTextFormField(
-                //
-                //   label: 'URL de Facebook',
-                //   initialValue: facebookUrl,
-                //   onChanged: (value) => setState(() => facebookUrl = value),
-                // ),
-                // SizedBox(height: 16),
-                // buildTextFormField(
-                //   label: 'URL de Instagram',
-                //   initialValue: instagramUrl,
-                //   onChanged: (value) => setState(() => instagramUrl = value),
-                // ),
-                // SizedBox(height: 16),
-                // buildTextFormField(
-                //   label: 'URL de LinkedIn',
-                //   initialValue: linkedInUrl,
-                //   onChanged: (value) => setState(() => linkedInUrl = value),
-                // ),
-                // SizedBox(height: 16),
-                _buildImagePickerField(), // Campo para seleccionar la imagen
-                SizedBox(height: 25),
-              ],
-            ),
-          ),
-        ),
-        child: const Text("Editar"),
-      );
-
-  TextFormField buildTextFormField({
-    //required TextEditingController controller,
-    required String label,
-    required String initialValue,
-    required Function(String) onChanged,
-    bool obscureText = false,
-  }) {
-    return TextFormField(
-      //rcontroller: controller,
-      initialValue: initialValue,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(),
-      ),
-      onChanged: onChanged,
-      obscureText: obscureText,
+      child: Text(mostrarOfertas
+          ? "No hay ofertas disponibles"
+          : "No hay demandas disponibles"),
     );
   }
 
+  Widget cardWithGutterAndAppBar() => TextButton(
+    onPressed: () => showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Personaliza tu AppBar aquí
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor, // o el color que desees para tu AppBar
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(15), // Redondea solo las esquinas superiores
+                    ),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Editar Perfil",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.close, color: Colors.white),
+                        onPressed: () => Navigator.of(context).pop(),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: ListView(
+                    padding: EdgeInsets.all(16),
+                    children: [
+                      buildTextFormField(
+                        label: 'Nombre',
+                        initialValue: _name,
+                        onChanged: (value) => setState(() => _name = value),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El nombre es obligatorio'; // Asegúrate de tener validación aquí
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      buildTextFormField(
+                        //controller: _last_nameController,
+                        label: 'Apellido',
+                        initialValue: last_name,
+                        onChanged: (value) =>
+                            setState(() => last_name = value),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El apellido es obligatorio'; // Asegúrate de tener validación aquí
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      buildStaticEmailField(),
+                      SizedBox(height: 16),
+                      buildTextFormField(
+                        //controller: _telefonoController,
+                        label: 'Teléfono',
+                        initialValue: telefono,
+                        onChanged: (value) =>
+                            setState(() => telefono = value),
+                      ),
+                      SizedBox(height: 16),
+                      buildTextFormField(
+                        label: 'Dirección',
+                        initialValue: direccion,
+                        onChanged: (value) =>
+                            setState(() => direccion = value),
+                      ),
+                      SizedBox(height: 16),
+                      buildTextFormField(
+                        label: 'Documento de Identificación',
+                        initialValue: documennto_identificacion,
+                        onChanged: (value) =>
+                            setState(() => documennto_identificacion = value),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'El documento es obligatorio'; // Asegúrate de tener validación aquí
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 16),
+                      buildDropdownField(
+                        controller: TextEditingController(text: genero),
+                        label: 'Género',
+                        value: genero,
+                        items: ['Masculino', 'Femenino', 'Otro'],
+                        onChanged: (value) => setState(() => genero = value!),
+                      ),
+                      SizedBox(height: 16),
+                      buildTextFormField(
+                        //controller: _descripcionController,
+                        label: 'Descripción',
+                        initialValue: _description,
+                        onChanged: (value) =>
+                            setState(() => _description = value),
+                      ),
+                      // SizedBox(height: 16),
+                      // buildTextFormField(
+                      //
+                      //   label: 'URL de Facebook',
+                      //   initialValue: facebookUrl,
+                      //   onChanged: (value) => setState(() => facebookUrl = value),
+                      // ),
+                      // SizedBox(height: 16),
+                      // buildTextFormField(
+                      //   label: 'URL de Instagram',
+                      //   initialValue: instagramUrl,
+                      //   onChanged: (value) => setState(() => instagramUrl = value),
+                      // ),
+                      // SizedBox(height: 16),
+                      // buildTextFormField(
+                      //   label: 'URL de LinkedIn',
+                      //   initialValue: linkedInUrl,
+                      //   onChanged: (value) => setState(() => linkedInUrl = value),
+                      // ),
+                      // SizedBox(height: 16),
+                      _buildImagePickerField(),
+                      SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        // Si todos los campos son válidos, actualiza el usuario y cierra el diálogo
+                        _actualizarUsuario();
+                        Navigator.of(context).pop(); // Cierra el diálogo
+                        DialogBuilder(context).showResultDialog(
+                            'Se han actualizado sus datos y se ha creado su cuenta correctamente'
+                        );
+                      } else {
+                        // Si hay campos inválidos, simplemente no cierra el diálogo
+                        // Los bordes rojos y mensajes de error ya se mostrarán automáticamente
+                      }
+                    },
+                    child: Text('Guardar'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: Size(double.infinity, 50),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ),
+    child: const Text("Editar"),
+  );
+
+  TextFormField buildTextFormField({
+
+    required String label,
+    required String initialValue,
+    required Function(String) onChanged,
+    String? Function(String?)? validator,
+    bool readOnly = false,
+    bool obscureText = false,
+  }) {
+    return TextFormField(
+      validator: validator, // Usa el validador que se pasa como parámetro
+      initialValue: initialValue,
+      readOnly: readOnly,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: TextStyle(color: Colors.blueAccent),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.blueAccent),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.deepPurpleAccent),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red, width: 2.0), // Borde rojo cuando hay error
+          borderRadius: BorderRadius.circular(30),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.red, width: 2.0), // Borde rojo al enfocar con error
+          borderRadius: BorderRadius.circular(30),
+        ),
+        errorStyle: TextStyle(color: Colors.red), // Estilo del texto de error
+        fillColor: readOnly ? Colors.black : Colors.white,
+        filled: true,
+      ),
+      style: TextStyle(fontSize: 16, color: Colors.black54),
+      onChanged: onChanged,
+    );
+  }
+
+  Widget buildStaticEmailField() {
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(30), // Bordes más redondeados
+        border: Border.all(color: Colors.blueAccent, width: 1),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Email',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.blueAccent,
+            ),
+          ),
+          SizedBox(height: 5),
+          Text(
+            _email,
+            style: TextStyle(fontSize: 16, color: Colors.black54),
+          ),
+        ],
+      ),
+    );
+  }
   Widget _buildImagePickerField() {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -623,7 +737,7 @@ class _ProfilePageState extends State<ProfilePage> {
           CircleAvatar(
             radius: 75, // El radio del CircleAvatar
             backgroundImage:
-                FileImage(_image!), // Muestra la imagen seleccionada
+            FileImage(_image!), // Muestra la imagen seleccionada
           )
         else
           CircleAvatar(
@@ -646,7 +760,17 @@ class _ProfilePageState extends State<ProfilePage> {
     return DropdownButtonFormField<String>(
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30), // Bordes redondeados para estado normal
+          borderSide: BorderSide(color: Colors.blueAccent),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30), // Bordes redondeados para estado enfocado
+          borderSide: BorderSide(color: Colors.pink),
+        ),
       ),
       value: value.isEmpty ? null : value,
       onChanged: onChanged,
@@ -703,9 +827,9 @@ class _ProfileInfoItemState extends State<ProfileInfoItem> {
           borderRadius: BorderRadius.circular(10),
           boxShadow: _isHovering
               ? [
-                  BoxShadow(
-                      color: Colors.blue, blurRadius: 10, offset: Offset(0, 0))
-                ]
+            BoxShadow(
+                color: Colors.blue, blurRadius: 10, offset: Offset(0, 0))
+          ]
               : [],
         ),
         child: Column(
@@ -735,7 +859,6 @@ class _ProfileInfoItemState extends State<ProfileInfoItem> {
 }
 
 
-
 class ServiciosPopup extends StatelessWidget {
   final String title;
   final List<dynamic> servicios;
@@ -759,16 +882,16 @@ class ServiciosPopup extends StatelessWidget {
   Widget _buildServiciosList(List<dynamic> servicios) {
     return servicios.isNotEmpty
         ? Column(
-            children: servicios.map((servicio) {
-              return ListTile(
-                title: Text('Tipo: ${servicio['ROL_CHOICES'] ?? ''}'),
-                subtitle: Text('Titulo: ${servicio['titulo'] ?? ''}'),
-              );
-            }).toList(),
-          )
+      children: servicios.map((servicio) {
+        return ListTile(
+          title: Text('Tipo: ${servicio['ROL_CHOICES'] ?? ''}'),
+          subtitle: Text('Titulo: ${servicio['titulo'] ?? ''}'),
+        );
+      }).toList(),
+    )
         : Center(
-            child: Text("No hay servicios disponibles"),
-          );
+      child: Text("No hay servicios disponibles"),
+    );
   }
 }
 
@@ -837,24 +960,24 @@ class _EditableTextField extends StatelessWidget {
 }
 
 Widget _singleItem(BuildContext context, ProfileInfoItem item) => Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Text(
-            item.value.toString(),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-            ),
-          ),
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Text(
+        item.value.toString(),
+        style: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
         ),
-        Text(
-          item.title,
-          style: Theme.of(context).textTheme.caption,
-        )
-      ],
-    );
+      ),
+    ),
+    Text(
+      item.title,
+      style: Theme.of(context).textTheme.caption,
+    )
+  ],
+);
 
 class _TopPortion extends StatelessWidget {
   const _TopPortion({Key? key, required this.profileImage}) : super(key: key);
@@ -896,7 +1019,7 @@ class _TopPortion extends StatelessWidget {
                         child: CircleAvatar(
                           radius: 20,
                           backgroundColor:
-                              Theme.of(context).scaffoldBackgroundColor,
+                          Theme.of(context).scaffoldBackgroundColor,
                           child: Container(
                             margin: const EdgeInsets.all(8.0),
                             decoration: const BoxDecoration(
@@ -932,7 +1055,7 @@ class _EditableRatingStarsState extends State<EditableRatingStars> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         5,
-        (index) => IconButton(
+            (index) => IconButton(
           icon: Icon(
             index < _rating.floor() ? Icons.star : Icons.star_border,
             color: Colors.amber,

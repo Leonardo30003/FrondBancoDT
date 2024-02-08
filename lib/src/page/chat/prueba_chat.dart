@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:bancodt/constantes/const.dart';
 import 'package:bancodt/constantes/colores.dart';
-import 'package:bancodt/constantes/widgets/widgets_personalizados.dart';
+//import 'package:bancodt/constantes/widgets/widgets_personalizados.dart';
 import 'package:xen_popup_card/xen_popup_card.dart';
 import 'package:bancodt/src/page/chat/chat.dart';
 
@@ -44,7 +44,7 @@ class _PruebaChatState extends State<PruebaChat> {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          cabecera("Historial"),
+          //cabecera("Historial"),
           Container(
             padding: EdgeInsets.all(20.0),
             color: azulUide,

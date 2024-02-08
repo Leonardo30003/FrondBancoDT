@@ -7,7 +7,7 @@ import 'package:bancodt/constantes/const.dart';
 class CuentaApi {
   static const String baseUrl = crear_cuenta;
   static const String buscarCuentaUser = burcar_cuenta_usuario;
-  // Reemplaza con tu URL de Django
+  static const String buscarCuentaId =buscarCuentaIdCuenta; // Reemplaza con tu URL de Django
 
   static Future<void> crearCuenta(Cuenta cuenta) async {
     final response = await http.post(
@@ -77,6 +77,18 @@ class CuentaApi {
   static Future<Cuenta> obtenerCuentaPorId(String usuario) async {
     final response =
         await http.get(Uri.parse('$buscarCuentaUser/?usuario=$usuario'));
+
+    if (response.statusCode == 200) {
+      print('Respuesta del servidor: ${response.body}');
+      final Map<String, dynamic> data = jsonDecode(response.body);
+      return Cuenta.fromJson(data);
+    } else {
+      throw Exception('Error al obtener Cuenta por ID: ${response.statusCode}');
+    }
+  }
+  static Future<Cuenta> obtenerCuentaPorCuenta(int usuario) async {
+    final response =
+    await http.get(Uri.parse('$buscarCuentaId/?idCuenta=$usuario'));
 
     if (response.statusCode == 200) {
       print('Respuesta del servidor: ${response.body}');

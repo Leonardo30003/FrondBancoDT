@@ -144,14 +144,14 @@ class ExampleSidebarX extends StatelessWidget {
       items: [
         SidebarXItem(
           icon: Icons.account_circle,
-          label: 'Perfil',
+          label: 'Inicio',
           onTap: () {
             debugPrint('Home');
           },
         ),
         const SidebarXItem(
           icon: Icons.account_balance,
-          label: 'Inicio',
+          label: 'Perfil',
         ),
         const SidebarXItem(
           icon: Icons.add_chart_rounded,
@@ -168,10 +168,6 @@ class ExampleSidebarX extends StatelessWidget {
         const SidebarXItem(
             icon: Icons.mark_email_read,
             label: "Buzon de Mensajes"
-        ),
-        const SidebarXItem(
-            icon: Icons.add_box_rounded,
-            label: "Chat"
         ),
         const SidebarXItem(
             icon: Icons.add_box_rounded,
@@ -202,9 +198,9 @@ class _ScreensExample extends StatelessWidget {
       builder: (context, child) {
         switch (controller.selectedIndex) {
           case 0:
-            return ProfilePage(); // Asumiendo que esta es una página definida
-          case 1:
             return OfertasHome(); // Asumiendo que esta es una página definida
+          case 1:
+            return ProfilePage(); // Asumiendo que esta es una página definida
           case 2:
             return DemandasHome(); // Asumiendo que esta es una página definida
           case 3:
@@ -214,8 +210,6 @@ class _ScreensExample extends StatelessWidget {
           case 5:
             return PruebaChat(); // Asumiendo que esta es una página definida
           case 6:
-            return chatPage();
-          case 7:
             return VerTransaccion();
           default:
             return Center(
@@ -233,9 +227,9 @@ class _ScreensExample extends StatelessWidget {
 String _getTitleByIndex(int index) {
   switch (index) {
     case 0:
-      return 'Perfil';
+      return 'Ofertas';
     case 1:
-      return 'Ofertas Home';
+      return 'Perfil';
     case 2:
       return 'Demandas';
     case 3:
@@ -248,8 +242,6 @@ String _getTitleByIndex(int index) {
       return 'Transaccion';
     case 7:
       return 'Buzon de Mensajes';
-    case 8:
-      return 'Chat';
     default:
       return 'Not found page';
   }
